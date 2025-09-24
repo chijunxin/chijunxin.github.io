@@ -7,7 +7,16 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>86</copyright>
-        <lastBuildDate>Tue, 23 Sep 2025 23:22:38 +0800</lastBuildDate><atom:link href="https://chijunxin.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 24 Sep 2025 15:03:07 +0800</lastBuildDate><atom:link href="https://chijunxin.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>New_test</title>
+        <link>https://chijunxin.github.io/p/new_test/</link>
+        <pubDate>Wed, 24 Sep 2025 15:03:07 +0800</pubDate>
+        
+        <guid>https://chijunxin.github.io/p/new_test/</guid>
+        <description>&lt;h3 id=&#34;新的测试&#34;&gt;新的测试
+&lt;/h3&gt;</description>
+        </item>
+        <item>
         <title>MyFirstBlog</title>
         <link>https://chijunxin.github.io/p/myfirstblog/</link>
         <pubDate>Tue, 23 Sep 2025 23:22:38 +0800</pubDate>
