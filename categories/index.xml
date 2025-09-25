@@ -1,52 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Categories on 86</title>
-        <link>https://chijunxin.github.io/categories/</link>
-        <description>Recent content in Categories on 86</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>zh-cn</language>
-        <copyright>86</copyright>
-        <lastBuildDate>Wed, 09 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://chijunxin.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Test</title>
-        <link>https://chijunxin.github.io/categories/test/</link>
-        <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-        
-        <guid>https://chijunxin.github.io/categories/test/</guid>
-        <description>&lt;img src="https://chijunxin.github.io/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
-        </item>
-        <item>
-        <title>测试</title>
-        <link>https://chijunxin.github.io/categories/%E6%B5%8B%E8%AF%95/</link>
-        <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-        
-        <guid>https://chijunxin.github.io/categories/%E6%B5%8B%E8%AF%95/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Syntax</title>
-        <link>https://chijunxin.github.io/categories/syntax/</link>
-        <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
-        
-        <guid>https://chijunxin.github.io/categories/syntax/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Themes</title>
-        <link>https://chijunxin.github.io/categories/themes/</link>
-        <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
-        
-        <guid>https://chijunxin.github.io/categories/themes/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Test With Whitespaces</title>
-        <link>https://chijunxin.github.io/categories/test-with-whitespaces/</link>
-        <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-        
-        <guid>https://chijunxin.github.io/categories/test-with-whitespaces/</guid>
-        <description></description>
-        </item>
-        
-    </channel>
+        <title>Categories - Category - 86</title>
+        <link>https://hugodoit.pages.dev/categories/</link>
+        <description>Categories - Category - 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/categories/" rel="self" type="application/rss+xml" /><item>
+    <title>Tests</title>
+    <link>https://hugodoit.pages.dev/categories/tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/categories/tests/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Documentation</title>
+    <link>https://hugodoit.pages.dev/categories/documentation/</link>
+    <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/categories/documentation/</guid>
+    <description><![CDATA[]]></description>
+</item></channel>
 </rss>

@@ -1,0 +1,20 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>StephenZ - Author - 86</title>
+        <link>https://hugodoit.pages.dev/authors/stephenz/</link>
+        <description>StephenZ - Author - 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/authors/stephenz/" rel="self" type="application/rss+xml" /><item>
+    <title>WaveDrom Tests</title>
+    <link>https://hugodoit.pages.dev/wavedrom-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/wavedrom-tests/</guid>
+    <description><![CDATA[WaveDrom Tests]]></description>
+</item><item>
+    <title>PlantUML Tests</title>
+    <link>https://hugodoit.pages.dev/plantuml-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:21:26 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/plantuml-tests/</guid>
+    <description><![CDATA[PlantUML Tests for Commonly Used Diagrams]]></description>
+</item></channel>
+</rss>
