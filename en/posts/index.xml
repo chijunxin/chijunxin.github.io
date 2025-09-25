@@ -1,0 +1,209 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>All Posts - 86</title>
+        <link>https://hugodoit.pages.dev/en/posts/</link>
+        <description>All Posts | 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/en/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Markdown Tests</title>
+    <link>https://hugodoit.pages.dev/en/markdown-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 12:27:57 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/markdown-tests/</guid>
+    <description><![CDATA[Test basic markdown rendering]]></description>
+</item><item>
+    <title>Built-in Shortcodes Tests</title>
+    <link>https://hugodoit.pages.dev/en/builtin-shortcodes-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:08:05 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/builtin-shortcodes-tests/</guid>
+    <description><![CDATA[Built-in Shortcodes Tests]]></description>
+</item><item>
+    <title>Extend Shortcodes Tests</title>
+    <link>https://hugodoit.pages.dev/en/extend-shortcodes-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:21:36 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/extend-shortcodes-tests/</guid>
+    <description><![CDATA[Extend Shortcodes Tests]]></description>
+</item><item>
+    <title>Typeit Tests</title>
+    <link>https://hugodoit.pages.dev/en/typeit-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:29:46 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/typeit-tests/</guid>
+    <description><![CDATA[Typeit Tests]]></description>
+</item><item>
+    <title>Bilibili Tests</title>
+    <link>https://hugodoit.pages.dev/en/bilibili-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:32:18 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/bilibili-tests/</guid>
+    <description><![CDATA[Bilibili Tests]]></description>
+</item><item>
+    <title>Mermaid Tests</title>
+    <link>https://hugodoit.pages.dev/en/mermaid-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:37:26 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/mermaid-tests/</guid>
+    <description><![CDATA[Mermaid Tests]]></description>
+</item><item>
+    <title>Echarts Tests</title>
+    <link>https://hugodoit.pages.dev/en/echarts-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:41:49 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/echarts-tests/</guid>
+    <description><![CDATA[Echarts Tests]]></description>
+</item><item>
+    <title>Mapbox Tests</title>
+    <link>https://hugodoit.pages.dev/en/mapbox-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:45:40 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/mapbox-tests/</guid>
+    <description><![CDATA[Mapbox Tests]]></description>
+</item><item>
+    <title>Music Tests</title>
+    <link>https://hugodoit.pages.dev/en/music-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:47:54 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/music-tests/</guid>
+    <description><![CDATA[Music Tests]]></description>
+</item><item>
+    <title>KaTeX Tests</title>
+    <link>https://hugodoit.pages.dev/en/katex-tests/</link>
+    <pubDate>Fri, 16 Apr 2021 14:53:03 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/katex-tests/</guid>
+    <description><![CDATA[KaTeX Tests]]></description>
+</item><item>
+    <title>Friend Shortcode Tests</title>
+    <link>https://hugodoit.pages.dev/en/friend-link-tests/</link>
+    <pubDate>Thu, 29 Apr 2021 13:41:31 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/friend-link-tests/</guid>
+    <description><![CDATA[Friend Shortcode Tests]]></description>
+</item><item>
+    <title>Showcase Tests</title>
+    <link>https://hugodoit.pages.dev/en/showcase-tests/</link>
+    <pubDate>Wed, 26 May 2021 15:30:49 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/showcase-tests/</guid>
+    <description><![CDATA[Showcase shortcode tests]]></description>
+</item><item>
+    <title>Author Fallback Tests</title>
+    <link>https://hugodoit.pages.dev/en/author-fallback-tests/</link>
+    <pubDate>Mon, 07 Jun 2021 20:35:12 &#43;0100</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/author-fallback-tests/</guid>
+    <description><![CDATA[Author Fallback Tests]]></description>
+</item><item>
+    <title>Single Author Tests</title>
+    <link>https://hugodoit.pages.dev/en/author-single-tests/</link>
+    <pubDate>Mon, 07 Jun 2021 20:40:23 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/author-single-tests/</guid>
+    <description><![CDATA[Single Author Tests]]></description>
+</item><item>
+    <title>Series Taxonomy Tests</title>
+    <link>https://hugodoit.pages.dev/en/series-taxonomy-tests/</link>
+    <pubDate>Sat, 03 Jul 2021 22:15:26 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/series-taxonomy-tests/</guid>
+    <description><![CDATA[Series Taxonomy Tests]]></description>
+</item><item>
+    <title>TOC Tests</title>
+    <link>https://hugodoit.pages.dev/en/toc-tests/</link>
+    <pubDate>Mon, 27 Sep 2021 09:47:46 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/toc-tests/</guid>
+    <description><![CDATA[TOC Tests]]></description>
+</item><item>
+    <title>APlayer Tests</title>
+    <link>https://hugodoit.pages.dev/en/aplayer-tests/</link>
+    <pubDate>Mon, 20 Dec 2021 17:35:33 &#43;0000</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/aplayer-tests/</guid>
+    <description><![CDATA[Author Fallback Tests]]></description>
+</item><item>
+    <title>How to create diagrams in DoIt</title>
+    <link>https://hugodoit.pages.dev/en/create-diagrams/</link>
+    <pubDate>Mon, 28 Feb 2022 14:27:14 &#43;0000</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/create-diagrams/</guid>
+    <description><![CDATA[This post explains how you can create custom SVG diagrams in DoIt using GoAT or Mermaid.]]></description>
+</item><item>
+    <title>Related tests</title>
+    <link>https://hugodoit.pages.dev/en/related-tests/</link>
+    <pubDate>Thu, 11 Aug 2022 14:53:59 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/related-tests/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Tab Tests</title>
+    <link>https://hugodoit.pages.dev/en/tab-tests/</link>
+    <pubDate>Sat, 20 May 2023 17:50:43 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/tab-tests/</guid>
+    <description><![CDATA[Tab Tests]]></description>
+</item><item>
+    <title>Codeblock Tests</title>
+    <link>https://hugodoit.pages.dev/en/codeblock-tests/</link>
+    <pubDate>Tue, 26 Mar 2024 12:27:57 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/codeblock-tests/</guid>
+    <description><![CDATA[Test codeblock rendering]]></description>
+</item><item>
+    <title>PlantUML Tests</title>
+    <link>https://hugodoit.pages.dev/en/plantuml-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:21:26 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/en/plantuml-tests/</guid>
+    <description><![CDATA[PlantUML Tests for Commonly Used Diagrams]]></description>
+</item><item>
+    <title>WaveDrom Tests</title>
+    <link>https://hugodoit.pages.dev/en/wavedrom-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/en/wavedrom-tests/</guid>
+    <description><![CDATA[WaveDrom Tests]]></description>
+</item><item>
+    <title>PWA Support</title>
+    <link>https://hugodoit.pages.dev/en/pwa-support/</link>
+    <pubDate>Mon, 10 May 2021 16:21:41 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/pwa-support/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/pwa-support/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p>Find out how to turn your DoIt site into a Progressive Web App.</p>]]></description>
+</item><item>
+    <title>Emoji Support</title>
+    <link>https://hugodoit.pages.dev/en/emoji-support/</link>
+    <pubDate>Tue, 01 Oct 2019 17:55:28 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><guid>https://hugodoit.pages.dev/en/emoji-support/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/emoji-support/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p>Emoji can be enabled in a Hugo project in a number of ways.</p>]]></description>
+</item><item>
+    <title>Basic Markdown Syntax</title>
+    <link>https://hugodoit.pages.dev/en/basic-markdown-syntax/</link>
+    <pubDate>Sun, 01 Dec 2019 21:57:40 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><guid>https://hugodoit.pages.dev/en/basic-markdown-syntax/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/basic-markdown-syntax/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files.</p>]]></description>
+</item><item>
+    <title>Theme Documentation - Extended Shortcodes</title>
+    <link>https://hugodoit.pages.dev/en/theme-documentation-extended-shortcodes/</link>
+    <pubDate>Fri, 06 Mar 2020 16:29:41 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/theme-documentation-extended-shortcodes/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/theme-documentation-extended-shortcodes/featured-image-preview.webp" referrerpolicy="no-referrer">
+            </div><p><strong>DoIt</strong> theme provides multiple shortcodes on top of built-in ones in Hugo.</p>]]></description>
+</item><item>
+    <title>Theme Documentation - Built-in Shortcodes</title>
+    <link>https://hugodoit.pages.dev/en/theme-documentation-built-in-shortcodes/</link>
+    <pubDate>Thu, 05 Mar 2020 16:29:41 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/theme-documentation-built-in-shortcodes/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/theme-documentation-built-in-shortcodes/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p><strong>Hugo</strong> provides multiple built-in shortcodes for author convenience and to keep your markdown content clean.</p>]]></description>
+</item><item>
+    <title>Theme Documentation - Content</title>
+    <link>https://hugodoit.pages.dev/en/theme-documentation-content/</link>
+    <pubDate>Wed, 04 Mar 2020 15:58:26 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/theme-documentation-content/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/theme-documentation-content/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p>Find out how to create and organize your content quickly and intuitively in <strong>DoIt</strong> theme.</p>]]></description>
+</item><item>
+    <title>Theme Documentation - Basics</title>
+    <link>https://hugodoit.pages.dev/en/theme-documentation-basics/</link>
+    <pubDate>Tue, 03 Mar 2020 21:29:01 &#43;0800</pubDate><author>
+                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/theme-documentation-basics/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/theme-documentation-basics/featured-image.webp" referrerpolicy="no-referrer">
+            </div><p>Discover what the Hugo - <strong>DoIt</strong> theme is all about and the core-concepts behind it.</p>]]></description>
+</item></channel>
+</rss>

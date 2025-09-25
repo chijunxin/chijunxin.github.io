@@ -1,37 +1,31 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Markdown - Tag - 86</title>
+        <title>Markdown - 标签 - 86</title>
         <link>https://hugodoit.pages.dev/tags/markdown/</link>
-        <description>Markdown - Tag - 86</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 11 Aug 2022 14:53:59 &#43;0100</lastBuildDate><atom:link href="https://hugodoit.pages.dev/tags/markdown/" rel="self" type="application/rss+xml" /><item>
-    <title>Theme Documentation - Content</title>
+        <description>Markdown - 标签 - 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 28 Feb 2022 14:27:14 &#43;0000</lastBuildDate><atom:link href="https://hugodoit.pages.dev/tags/markdown/" rel="self" type="application/rss+xml" /><item>
+    <title>主题文档 - 内容</title>
     <link>https://hugodoit.pages.dev/theme-documentation-content/</link>
-    <pubDate>Wed, 04 Mar 2020 15:58:26 &#43;0800</pubDate><author>
+    <pubDate>Wed, 04 Mar 2020 16:30:05 &#43;0800</pubDate><author>
                         <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
                         <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/theme-documentation-content/</guid>
     <description><![CDATA[<div class="featured-image">
                 <img src="/theme-documentation-content/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>Find out how to create and organize your content quickly and intuitively in <strong>DoIt</strong> theme.</p>]]></description>
+            </div><p>了解如何在 <strong>DoIt</strong> 主题中快速, 直观地创建和组织内容.</p>]]></description>
 </item><item>
-    <title>Basic Markdown Syntax</title>
+    <title>Markdown 基本语法</title>
     <link>https://hugodoit.pages.dev/basic-markdown-syntax/</link>
     <pubDate>Sun, 01 Dec 2019 21:57:40 &#43;0800</pubDate><author>
                         <name>Dillon</name><uri>https://dillonzq.com</uri></author><guid>https://hugodoit.pages.dev/basic-markdown-syntax/</guid>
     <description><![CDATA[<div class="featured-image">
                 <img src="/basic-markdown-syntax/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files.</p>]]></description>
+            </div><p>这篇文章提供了可以在 Hugo 的文章中使用的基本 Markdown 语法示例.</p>]]></description>
 </item><item>
-    <title>Related tests</title>
-    <link>https://hugodoit.pages.dev/related-tests/</link>
-    <pubDate>Thu, 11 Aug 2022 14:53:59 &#43;0100</pubDate><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/related-tests/</guid>
-    <description><![CDATA[]]></description>
-</item><item>
-    <title>How to create diagrams in DoIt</title>
+    <title>如何在 DoIt 中创建图表</title>
     <link>https://hugodoit.pages.dev/create-diagrams/</link>
     <pubDate>Mon, 28 Feb 2022 14:27:14 &#43;0000</pubDate><author>
                         <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/create-diagrams/</guid>
-    <description><![CDATA[This post explains how you can create custom SVG diagrams in DoIt using GoAT or Mermaid.]]></description>
+    <description><![CDATA[这篇文档将展示如何在 DoIt 中使用 GoAT 和 Mermaid 创建 SVG 图表。]]></description>
 </item></channel>
 </rss>

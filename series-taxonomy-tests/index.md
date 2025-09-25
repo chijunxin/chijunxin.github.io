@@ -1,6 +1,6 @@
-# Series Taxonomy Tests
+# 系列分类测试
 
 
 <!--more-->
 
-[Series Taxonomy](/series)
+[系列分类](/zh-cn/series)

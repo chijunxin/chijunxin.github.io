@@ -1,0 +1,71 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Tests - Category - 86</title>
+        <link>https://hugodoit.pages.dev/en/categories/tests/</link>
+        <description>Tests - Category - 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/en/categories/tests/" rel="self" type="application/rss+xml" /><item>
+    <title>WaveDrom Tests</title>
+    <link>https://hugodoit.pages.dev/en/wavedrom-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/en/wavedrom-tests/</guid>
+    <description><![CDATA[WaveDrom Tests]]></description>
+</item><item>
+    <title>PlantUML Tests</title>
+    <link>https://hugodoit.pages.dev/en/plantuml-tests/</link>
+    <pubDate>Thu, 13 Mar 2025 01:21:26 &#43;0800</pubDate><author>
+                        <name>Stephen Zhang</name><uri>https:/github.com/zhang-stephen</uri></author><guid>https://hugodoit.pages.dev/en/plantuml-tests/</guid>
+    <description><![CDATA[PlantUML Tests for Commonly Used Diagrams]]></description>
+</item><item>
+    <title>Codeblock Tests</title>
+    <link>https://hugodoit.pages.dev/en/codeblock-tests/</link>
+    <pubDate>Tue, 26 Mar 2024 12:27:57 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/codeblock-tests/</guid>
+    <description><![CDATA[Test codeblock rendering]]></description>
+</item><item>
+    <title>Tab Tests</title>
+    <link>https://hugodoit.pages.dev/en/tab-tests/</link>
+    <pubDate>Sat, 20 May 2023 17:50:43 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/tab-tests/</guid>
+    <description><![CDATA[Tab Tests]]></description>
+</item><item>
+    <title>APlayer Tests</title>
+    <link>https://hugodoit.pages.dev/en/aplayer-tests/</link>
+    <pubDate>Mon, 20 Dec 2021 17:35:33 &#43;0000</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/aplayer-tests/</guid>
+    <description><![CDATA[Author Fallback Tests]]></description>
+</item><item>
+    <title>TOC Tests</title>
+    <link>https://hugodoit.pages.dev/en/toc-tests/</link>
+    <pubDate>Mon, 27 Sep 2021 09:47:46 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/toc-tests/</guid>
+    <description><![CDATA[TOC Tests]]></description>
+</item><item>
+    <title>Series Taxonomy Tests</title>
+    <link>https://hugodoit.pages.dev/en/series-taxonomy-tests/</link>
+    <pubDate>Sat, 03 Jul 2021 22:15:26 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/series-taxonomy-tests/</guid>
+    <description><![CDATA[Series Taxonomy Tests]]></description>
+</item><item>
+    <title>Single Author Tests</title>
+    <link>https://hugodoit.pages.dev/en/author-single-tests/</link>
+    <pubDate>Mon, 07 Jun 2021 20:40:23 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/author-single-tests/</guid>
+    <description><![CDATA[Single Author Tests]]></description>
+</item><item>
+    <title>Author Fallback Tests</title>
+    <link>https://hugodoit.pages.dev/en/author-fallback-tests/</link>
+    <pubDate>Mon, 07 Jun 2021 20:35:12 &#43;0100</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/author-fallback-tests/</guid>
+    <description><![CDATA[Author Fallback Tests]]></description>
+</item><item>
+    <title>Showcase Tests</title>
+    <link>https://hugodoit.pages.dev/en/showcase-tests/</link>
+    <pubDate>Wed, 26 May 2021 15:30:49 &#43;0100</pubDate><author>
+                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/en/showcase-tests/</guid>
+    <description><![CDATA[Showcase shortcode tests]]></description>
+</item></channel>
+</rss>

@@ -1,9 +1,9 @@
-# Showcase
+# 作品
 
 
-{{< showcase "Theme Documentation - Basics" "Discover what the Hugo - DoIt theme is all about and the core-concepts behind it." "/theme-documentation-basics/featured-image.webp" "/theme-documentation-basics/" >}}
+{{< showcase "主题文档 - 基本概念" "探索 Hugo - DoIt 主题的全部内容和背后的核心概念" "/theme-documentation-basics/featured-image.webp" "/zh-cn/theme-documentation-basics/" >}}
 
-{{< showcase "Theme Documentation - Content" "Find out how to create and organize your content quickly and intuitively in DoIt theme." "/theme-documentation-content/featured-image.webp" "/theme-documentation-content/" >}}
+{{< showcase "主题文档 - 内容" "了解如何在 DoIt 主题中快速, 直观地创建和组织内容" "/theme-documentation-content/featured-image.webp" "/zh-cn/theme-documentation-content/" >}}
 
-{{< showcase "Theme Documentation - Extended Shortcodes" "DoIt theme provides multiple shortcodes on top of built-in ones in Hugo." "/theme-documentation-extended-shortcodes/featured-image.webp" "/theme-documentation-extended-shortcodes/" >}}
+{{< showcase "主题文档 - 扩展 Shortcodes" "DoIt 主题在 Hugo 内置的 shortcode 的基础上提供多个扩展的 shortcode" "/theme-documentation-extended-shortcodes/featured-image.webp" "/zh-cn/theme-documentation-extended-shortcodes/" >}}
 

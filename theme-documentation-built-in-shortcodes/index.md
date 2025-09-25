@@ -1,34 +1,35 @@
-# Theme Documentation - Built-in Shortcodes
+# 主题文档 - 内置 Shortcodes
 
 
-**Hugo** provides multiple built-in shortcodes for author convenience and to keep your markdown content clean.
+**Hugo** 提供了多个内置的 Shortcodes, 以方便作者保持 Markdown 内容的整洁.
 
 <!--more-->
 
-Hugo uses Markdown for its simple content format. However, there are a lot of things that Markdown doesn’t support well. You could use pure HTML to expand possibilities.
+Hugo 使用 Markdown 为其简单的内容格式. 但是, Markdown 在很多方面都无法很好地支持. 你可以使用纯 HTML 来扩展可能性.
 
-But this happens to be a bad idea. Everyone uses Markdown because it’s pure and simple to read even non-rendered. You should avoid HTML to keep it as simple as possible.
+但这恰好是一个坏主意. 大家使用 Markdown, 正是因为它即使不经过渲染也可以轻松阅读. 应该尽可能避免使用 HTML 以保持内容简洁.
 
-To avoid this limitations, Hugo created [shortcodes](https://gohugo.io/extras/shortcodes/).
-A shortcode is a simple snippet that can generate reasonable HTML code and conforms to Markdown's design philosophy.
+为了避免这种限制, Hugo 创建了 [shortcodes](https://gohugo.io/extras/shortcodes/).
+shortcode 是一个简单代码段, 可以生成合理的 HTML 代码, 并且符合 Markdown 的设计哲学.
 
-Hugo ships with a set of predefined shortcodes that represent very common usage. These shortcodes are provided for author convenience and to keep your markdown content clean.
+Hugo 附带了一组预定义的 shortcodes, 它们实现了一些非常常见的用法.
+提供这些 shortcodes 是为了方便保持你的 Markdown 内容简洁.
 
 ## figure {#figure}
 
-[Documentation of `figure`](https://gohugo.io/content-management/shortcodes#figure)
+[`figure` 的文档](https://gohugo.io/content-management/shortcodes#figure)
 
-Example `figure` input:
+一个 `figure` 示例:
 
 ```markdown
 {{</* figure src="/images/lighthouse.webp" title="Lighthouse (figure)" */>}}
 ```
 
-The rendered output looks like this:
+呈现的输出效果如下:
 
 {{< figure src="/images/lighthouse.webp" title="Lighthouse (figure)" >}}
 
-The HTML looks like this:
+输出的 HTML 看起来像这样:
 
 ```html
 <figure>
@@ -41,19 +42,19 @@ The HTML looks like this:
 
 ## gist
 
-[Documentation of `gist`](https://gohugo.io/content-management/shortcodes#gist)
+[`gist` 的文档](https://gohugo.io/content-management/shortcodes#gist)
 
-Example `gist` input:
+一个 `gist` 示例:
 
 ```markdown
 {{</* gist spf13 7896402 */>}}
 ```
 
-The rendered output looks like this:
+呈现的输出效果如下:
 
 {{< gist spf13 7896402 >}}
 
-The HTML looks like this:
+输出的 HTML 看起来像这样:
 
 ```html
 <script type="application/javascript" src="https://gist.github.com/spf13/7896402.js"></script>
@@ -61,27 +62,27 @@ The HTML looks like this:
 
 ## param
 
-[Documentation of `param`](https://gohugo.io/content-management/shortcodes#param)
+[`param` 的文档](https://gohugo.io/content-management/shortcodes#param)
 
-Example `param` input:
+一个 `param` 示例:
 
 ```markdown
 {{</* param description */>}}
 ```
 
-The rendered output looks like this:
+呈现的输出效果如下:
 
 {{< param description >}}
 
-## ref and relref {#ref-and-relref}
+## ref 和 relref {#ref-and-relref}
 
-[Documentation of `ref` and `relref`](https://gohugo.io/content-management/shortcodes#ref-and-relref)
+[`ref` 和 `relref` 的文档](https://gohugo.io/content-management/shortcodes#ref-and-relref)
 
 ## x
 
-[Documentation of `x`](https://gohugo.io/content-management/shortcodes#x)
+[`x` 的文档](https://gohugo.io/content-management/shortcodes#x)
 
-Example `x` input:
+一个 `x` 示例:
 
 ```markdown
 {{</* x user="SanDiegoZoo" id="1453110110599868418" */>}}
@@ -91,29 +92,29 @@ Example `x` input:
 
 ## vimeo
 
-[Documentation of `vimeo`](https://gohugo.io/content-management/shortcodes#vimeo)
+[`vimeo` 的文档](https://gohugo.io/content-management/shortcodes#vimeo)
 
-Example `vimeo` input:
+一个 `vimeo` 示例:
 
 ```markdown
 {{</* vimeo 146022717 */>}}
 ```
 
-The rendered output looks like this:
+呈现的输出效果如下:
 
 {{< vimeo 146022717 >}}
 
 ## youtube
 
-[Documentation of `youtube`](https://gohugo.io/content-management/shortcodes#youtube)
+[`youtube` 的文档](https://gohugo.io/content-management/shortcodes#youtube)
 
-Example `youtube` input:
+一个 `youtube` 示例:
 
 ```markdown
 {{</* youtube w7Ft2ymGmfc */>}}
 ```
 
-The rendered output looks like this:
+呈现的输出效果如下:
 
 {{< youtube w7Ft2ymGmfc >}}
 

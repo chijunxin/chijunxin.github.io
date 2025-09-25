@@ -1,0 +1,29 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Authors - Author - 86</title>
+        <link>https://hugodoit.pages.dev/en/authors/</link>
+        <description>Authors - Author - 86</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://hugodoit.pages.dev/en/authors/" rel="self" type="application/rss+xml" /><item>
+    <title>StephenZ</title>
+    <link>https://hugodoit.pages.dev/en/authors/stephenz/</link>
+    <pubDate>Thu, 13 Mar 2025 01:57:14 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/authors/stephenz/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>PCloud</title>
+    <link>https://hugodoit.pages.dev/en/authors/pcloud/</link>
+    <pubDate>Tue, 26 Mar 2024 12:27:57 &#43;0100</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/authors/pcloud/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Dillon</title>
+    <link>https://hugodoit.pages.dev/en/authors/dillon/</link>
+    <pubDate>Fri, 06 Mar 2020 16:29:41 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/en/authors/dillon/</guid>
+    <description><![CDATA[]]></description>
+</item></channel>
+</rss>
