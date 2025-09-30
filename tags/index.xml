@@ -4,10 +4,24 @@
         <link>https://hugodoit.pages.dev/tags/</link>
         <description>Tags - 标签 - 86</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/tags/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 30 Sep 2025 18:31:12 &#43;0800</lastBuildDate><atom:link href="https://hugodoit.pages.dev/tags/" rel="self" type="application/rss+xml" /><item>
+    <title>Skynet</title>
+    <link>https://hugodoit.pages.dev/tags/skynet/</link>
+    <pubDate>Tue, 30 Sep 2025 18:31:12 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/tags/skynet/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Linux</title>
+    <link>https://hugodoit.pages.dev/tags/linux/</link>
+    <pubDate>Tue, 30 Sep 2025 15:53:02 &#43;0800</pubDate><author>
+        <name>PCloud</name>
+    </author><guid>https://hugodoit.pages.dev/tags/linux/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>网络</title>
     <link>https://hugodoit.pages.dev/tags/%E7%BD%91%E7%BB%9C/</link>
-    <pubDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</pubDate><author>
+    <pubDate>Tue, 30 Sep 2025 15:53:02 &#43;0800</pubDate><author>
         <name>PCloud</name>
     </author><guid>https://hugodoit.pages.dev/tags/%E7%BD%91%E7%BB%9C/</guid>
     <description><![CDATA[]]></description>
@@ -59,20 +73,6 @@
     <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><author>
         <name>PCloud</name>
     </author><guid>https://hugodoit.pages.dev/tags/installation/</guid>
-    <description><![CDATA[]]></description>
-</item><item>
-    <title>内容</title>
-    <link>https://hugodoit.pages.dev/tags/content/</link>
-    <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><author>
-        <name>PCloud</name>
-    </author><guid>https://hugodoit.pages.dev/tags/content/</guid>
-    <description><![CDATA[]]></description>
-</item><item>
-    <title>配置</title>
-    <link>https://hugodoit.pages.dev/tags/configuration/</link>
-    <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><author>
-        <name>PCloud</name>
-    </author><guid>https://hugodoit.pages.dev/tags/configuration/</guid>
     <description><![CDATA[]]></description>
 </item></channel>
 </rss>

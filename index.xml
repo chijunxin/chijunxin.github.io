@@ -4,9 +4,27 @@
         <link>https://hugodoit.pages.dev/</link>
         <description>Hugo DoIt 主题官方文档</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</lastBuildDate>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 30 Sep 2025 18:31:12 &#43;0800</lastBuildDate>
             <atom:link href="https://hugodoit.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Skynet如何创建和启动的c服务</title>
+    <link>https://hugodoit.pages.dev/skynet%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%92%8C%E5%90%AF%E5%8A%A8%E7%9A%84c%E6%9C%8D%E5%8A%A1/</link>
+    <pubDate>Tue, 30 Sep 2025 18:31:12 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/skynet%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%92%8C%E5%90%AF%E5%8A%A8%E7%9A%84c%E6%9C%8D%E5%8A%A1/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Skynet服务开发语言选择指南</title>
+    <link>https://hugodoit.pages.dev/skynet%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97/</link>
+    <pubDate>Tue, 30 Sep 2025 17:06:04 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/skynet%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>一台linux最大能支持多少条TCP连接</title>
+    <link>https://hugodoit.pages.dev/%E4%B8%80%E5%8F%B0linux%E6%9C%80%E5%A4%A7%E8%83%BD%E6%94%AF%E6%8C%81%E5%A4%9A%E5%B0%91%E6%9D%A1tcp%E8%BF%9E%E6%8E%A5/</link>
+    <pubDate>Tue, 30 Sep 2025 15:53:02 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/%E4%B8%80%E5%8F%B0linux%E6%9C%80%E5%A4%A7%E8%83%BD%E6%94%AF%E6%8C%81%E5%A4%9A%E5%B0%91%E6%9D%A1tcp%E8%BF%9E%E6%8E%A5/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>Websocket协议解析</title>
     <link>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</link>
     <pubDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</pubDate><author>
@@ -64,31 +82,5 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/emoji-support/featured-image.webp" referrerpolicy="no-referrer">
             </div><p>Emoji 可以通过多种方式在 Hugo 项目中启用.</p>]]></description>
-</item><item>
-    <title>PWA 支持</title>
-    <link>https://hugodoit.pages.dev/pwa-support/</link>
-    <pubDate>Mon, 10 May 2021 16:21:41 &#43;0100</pubDate><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/pwa-support/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/pwa-support/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>了解如何在 DoIt 主题中配置渐进式网络应用程序 (PWA).</p>]]></description>
-</item><item>
-    <title>Bluesky Tests</title>
-    <link>https://hugodoit.pages.dev/bluesky-tests/</link>
-    <pubDate>Sat, 14 Dec 2024 23:35:20 &#43;0000</pubDate><author>
-        <name>PCloud</name>
-    </author><guid>https://hugodoit.pages.dev/bluesky-tests/</guid>
-    <description><![CDATA[Bluesky Shortcode Tests]]></description>
-</item><item>
-    <title>Image Tests</title>
-    <link>https://hugodoit.pages.dev/image-tests/</link>
-    <pubDate>Thu, 06 Jun 2024 12:41:49 &#43;0100</pubDate><author>
-        <name>PCloud</name>
-    </author><guid>https://hugodoit.pages.dev/image-tests/</guid>
-    <description><![CDATA[<ul>
-<li>Test 1: <img class="tw-inline" loading="lazy" src='/image-tests/pin_black.png' srcset="/image-tests/pin_black_hu_22339beecc2bfa8b.webp 800w, /image-tests/pin_black_hu_b2135d08bde943a6.webp 1200w, /image-tests/pin_black_hu_37791aecfa3626db.webp 1600w"   height="20" width="20"></li>
-<li>Test 2: <img class="tw-inline" loading="lazy" src='/image-tests/pin_red.png' srcset="/image-tests/pin_red_hu_4ccc8de8dad40066.webp 800w, /image-tests/pin_red_hu_27810ff91f212fe3.webp 1200w, /image-tests/pin_red_hu_5b468faece4b9945.webp 1600w"   height="20" width="20"></li>
-<li>Test 3: <img class="tw-inline" loading="lazy" src='/image-tests/pin_white.png' srcset="/image-tests/pin_white_hu_eaaa0bd9189cd5a9.webp 800w, /image-tests/pin_white_hu_6b97b27d1b9484d6.webp 1200w, /image-tests/pin_white_hu_c2ff579a8066f0d5.webp 1600w"   height="20" width="20"></li>
-</ul>]]></description>
 </item></channel>
 </rss>
