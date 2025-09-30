@@ -4,9 +4,15 @@
         <link>https://hugodoit.pages.dev/</link>
         <description>Hugo DoIt 主题官方文档</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 14 Dec 2024 23:35:20 &#43;0000</lastBuildDate>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</lastBuildDate>
             <atom:link href="https://hugodoit.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Websocket协议解析</title>
+    <link>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</link>
+    <pubDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>主题文档 - 基本概念</title>
     <link>https://hugodoit.pages.dev/theme-documentation-basics/</link>
     <pubDate>Tue, 03 Mar 2020 21:40:32 &#43;0800</pubDate><author>
@@ -84,12 +90,5 @@
 <li>Test 2: <img class="tw-inline" loading="lazy" src='/image-tests/pin_red.png' srcset="/image-tests/pin_red_hu_4ccc8de8dad40066.webp 800w, /image-tests/pin_red_hu_27810ff91f212fe3.webp 1200w, /image-tests/pin_red_hu_5b468faece4b9945.webp 1600w"   height="20" width="20"></li>
 <li>Test 3: <img class="tw-inline" loading="lazy" src='/image-tests/pin_white.png' srcset="/image-tests/pin_white_hu_eaaa0bd9189cd5a9.webp 800w, /image-tests/pin_white_hu_6b97b27d1b9484d6.webp 1200w, /image-tests/pin_white_hu_c2ff579a8066f0d5.webp 1600w"   height="20" width="20"></li>
 </ul>]]></description>
-</item><item>
-    <title>Person Tests</title>
-    <link>https://hugodoit.pages.dev/person-tests/</link>
-    <pubDate>Sat, 11 May 2024 17:54:33 &#43;0100</pubDate><author>
-        <name>PCloud</name>
-    </author><guid>https://hugodoit.pages.dev/person-tests/</guid>
-    <description><![CDATA[Person Shortcode Tests]]></description>
 </item></channel>
 </rss>

@@ -2,6 +2,7 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
+            <loc>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://hugodoit.pages.dev/theme-documentation-basics/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
@@ -65,7 +66,7 @@
                     hreflang="zh-cn"
                     href="https://hugodoit.pages.dev/pwa-support/"
                     /></url><url>
-            <loc>https://hugodoit.pages.dev/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://hugodoit.pages.dev/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://hugodoit.pages.dev/en/"
@@ -74,8 +75,8 @@
                     hreflang="zh-cn"
                     href="https://hugodoit.pages.dev/"
                     /></url><url>
-            <loc>https://hugodoit.pages.dev/bluesky-tests/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://hugodoit.pages.dev/categories/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://hugodoit.pages.dev/authors/86/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://hugodoit.pages.dev/categories/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://hugodoit.pages.dev/en/categories/"
@@ -84,7 +85,7 @@
                     hreflang="zh-cn"
                     href="https://hugodoit.pages.dev/categories/"
                     /></url><url>
-            <loc>https://hugodoit.pages.dev/posts/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://hugodoit.pages.dev/posts/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://hugodoit.pages.dev/en/posts/"
@@ -93,6 +94,17 @@
                     hreflang="zh-cn"
                     href="https://hugodoit.pages.dev/posts/"
                     /></url><url>
+            <loc>https://hugodoit.pages.dev/tags/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://hugodoit.pages.dev/en/tags/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://hugodoit.pages.dev/tags/"
+                    /></url><url>
+            <loc>https://hugodoit.pages.dev/tags/%E7%BD%91%E7%BB%9C/</loc><lastmod>2025-09-28T15:31:05&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://hugodoit.pages.dev/bluesky-tests/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://hugodoit.pages.dev/categories/tests/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
@@ -130,15 +142,6 @@
                     rel="alternate"
                     hreflang="zh-cn"
                     href="https://hugodoit.pages.dev/authors/pcloud/"
-                    /></url><url>
-            <loc>https://hugodoit.pages.dev/tags/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
-                        rel="alternate"
-                        hreflang="en"
-                        href="https://hugodoit.pages.dev/en/tags/"
-                        /><xhtml:link
-                    rel="alternate"
-                    hreflang="zh-cn"
-                    href="https://hugodoit.pages.dev/tags/"
                     /></url><url>
             <loc>https://hugodoit.pages.dev/create-diagrams/</loc><lastmod>2025-09-26T01:20:27&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"

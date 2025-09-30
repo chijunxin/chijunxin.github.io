@@ -5,6 +5,12 @@
         <description>文档 - 分类 - 86</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
             <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://hugodoit.pages.dev/categories/documentation/" rel="self" type="application/rss+xml" /><item>
+    <title>Websocket协议解析</title>
+    <link>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</link>
+    <pubDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>主题文档 - 基本概念</title>
     <link>https://hugodoit.pages.dev/theme-documentation-basics/</link>
     <pubDate>Tue, 03 Mar 2020 21:40:32 &#43;0800</pubDate><author>
