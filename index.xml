@@ -4,9 +4,21 @@
         <link>https://hugodoit.pages.dev/</link>
         <description>Hugo DoIt 主题官方文档</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 02 Oct 2025 13:51:20 &#43;0800</lastBuildDate>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 09 Oct 2025 15:43:41 &#43;0800</lastBuildDate>
             <atom:link href="https://hugodoit.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>自旋锁和互斥锁</title>
+    <link>https://hugodoit.pages.dev/%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81/</link>
+    <pubDate>Thu, 09 Oct 2025 15:43:41 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Skynet源码赏析</title>
+    <link>https://hugodoit.pages.dev/skynet%E6%BA%90%E7%A0%81%E8%B5%8F%E6%9E%90/</link>
+    <pubDate>Thu, 09 Oct 2025 14:27:42 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/skynet%E6%BA%90%E7%A0%81%E8%B5%8F%E6%9E%90/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>源码安装UE5</title>
     <link>https://hugodoit.pages.dev/%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85ue5/</link>
     <pubDate>Thu, 02 Oct 2025 13:51:20 &#43;0800</pubDate><author>
@@ -63,22 +75,5 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/theme-documentation-built-in-shortcodes/featured-image.webp" referrerpolicy="no-referrer">
             </div><p><strong>Hugo</strong> 提供了多个内置的 Shortcodes, 以方便作者保持 Markdown 内容的整洁.</p>]]></description>
-</item><item>
-    <title>主题文档 - 扩展 Shortcodes</title>
-    <link>https://hugodoit.pages.dev/theme-documentation-extended-shortcodes/</link>
-    <pubDate>Fri, 06 Mar 2020 16:29:59 &#43;0800</pubDate><author>
-                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/theme-documentation-extended-shortcodes/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/theme-documentation-extended-shortcodes/featured-image-preview.webp" referrerpolicy="no-referrer">
-            </div><p><strong>DoIt</strong> 主题在 Hugo 内置的 shortcode 的基础上提供多个扩展的 shortcode.</p>]]></description>
-</item><item>
-    <title>Markdown 基本语法</title>
-    <link>https://hugodoit.pages.dev/basic-markdown-syntax/</link>
-    <pubDate>Sun, 01 Dec 2019 21:57:40 &#43;0800</pubDate><author>
-                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><guid>https://hugodoit.pages.dev/basic-markdown-syntax/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/basic-markdown-syntax/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>这篇文章提供了可以在 Hugo 的文章中使用的基本 Markdown 语法示例.</p>]]></description>
 </item></channel>
 </rss>
