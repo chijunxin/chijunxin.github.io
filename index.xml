@@ -4,9 +4,15 @@
         <link>https://hugodoit.pages.dev/</link>
         <description>Hugo DoIt 主题官方文档</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 09 Oct 2025 15:43:41 &#43;0800</lastBuildDate>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 11 Oct 2025 14:30:48 &#43;0800</lastBuildDate>
             <atom:link href="https://hugodoit.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Windows平台docker修改容器的端口映射配置</title>
+    <link>https://hugodoit.pages.dev/windows%E5%B9%B3%E5%8F%B0docker%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE/</link>
+    <pubDate>Sat, 11 Oct 2025 14:30:48 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/windows%E5%B9%B3%E5%8F%B0docker%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>自旋锁和互斥锁</title>
     <link>https://hugodoit.pages.dev/%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81/</link>
     <pubDate>Thu, 09 Oct 2025 15:43:41 &#43;0800</pubDate><author>
@@ -66,14 +72,5 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/theme-documentation-content/featured-image.webp" referrerpolicy="no-referrer">
             </div><p>了解如何在 <strong>DoIt</strong> 主题中快速, 直观地创建和组织内容.</p>]]></description>
-</item><item>
-    <title>主题文档 - 内置 Shortcodes</title>
-    <link>https://hugodoit.pages.dev/theme-documentation-built-in-shortcodes/</link>
-    <pubDate>Thu, 05 Mar 2020 16:29:59 &#43;0800</pubDate><author>
-                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/theme-documentation-built-in-shortcodes/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/theme-documentation-built-in-shortcodes/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p><strong>Hugo</strong> 提供了多个内置的 Shortcodes, 以方便作者保持 Markdown 内容的整洁.</p>]]></description>
 </item></channel>
 </rss>
