@@ -416,7 +416,7 @@ skynet_start(struct skynet_config * config) {
 2. 此时，在图1中的skynet_module列表中，搜索logger服务模块，如果没找到则在so库的输出路径中，寻找名为logger的so库，找到则将该so库加载到内存中，并将对应的logger_create,logger_init,logger_release函数地址分别赋值给logger模块中的create,init,release函数指针，此时图1中的skynet_module列表中，多了一个logger模块。
 3. 创建服务实例，即创建一个skynet_context实例，为了使skynet_context实例拥有访问logger服务内部函数的权限，这里将logger模块指针，赋值给skynet_context实例的mod变量中。
 4. 创建一个logger服务的数据实例，调用logger服务的create函数：  
-```
+``` C
 // service_logger.c
 struct logger {
 	FILE * handle;
@@ -434,7 +434,7 @@ logger_create(void) {
 此时，将新创建的数据实例赋值给skynet_context的instance变量，此时，一个服务对象运行时，所要用到的逻辑，能够通过mod变量，访问logger服务对应的函数，而通过instance可以找到该服务自己的数据块。
 5. 将新创建的skynet_context对象，注册到图一的skynet_context list中，此时skynet_context list多了一个logger服务实例
 6. 初始化logger服务，注册logger服务的callback函数：  
-```
+``` C
 // service_logger.c
 static int
 _logger(struct skynet_context * context, void *ud, int type, int session, uint32_t source, const void * msg, size_t sz) {
@@ -517,7 +517,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
 在这个过程中，因为每个worker线程会从global_mq里pop一个次级消息队列出来，此时其他worker线程就不能从global_mq里pop出同一个次级消息队列，也就是说，一个服务不能同时在多个worker线程内调用callback函数，从而保证了线程安全。
 2. worker线程的创建与运作  
     要理解skynet的消息调度，首先要理解worker线程的创建流程，基本运作以及线程安全。worker线程的数量由配置的“thread”字段指定，skynet节点启动时，会创建配置指定数量的worker线程，我们可以再skynet_start.c的start函数中找到这个创建流程：  
-    ```
+    ``` C
     // skynet_start.c
     static void
     start(int thread) {
@@ -571,7 +571,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
     }
     ```
     skynet所有的线程都在这里被创建，在创建完monitor线程，timer线程和socket线程以后，就开始创建worker线程。每条worker线程会被指定一个权重值，这个权重值决定一条线程一次消费多少条次级消息队列里的消息，当权重值< 0，worker线程一次消费一条消息（从次级消息队列中pop一个消息）；当权重==0的时候，worker线程一次消费完次级消息队列里所有的消息；当权重>0时，假设次级消息队列的长度为mq_length，将mq_length转成二进制数值以后，向右移动weight（权重值）位，结果N则是，该线程一次消费次级消息队列的消息数。在多条线程，同时运作时，每条worker线程都要从global_mq中pop一条次级消息队列出来，对global_mq进行pop和push操作的时候，会用自旋锁锁住临界区， 
-    ```
+    ``` C
     // skynet_mq.c
     void 
     skynet_globalmq_push(struct message_queue * queue) {
@@ -609,7 +609,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
     ```
     这样出队操作，只能同时在一条worker线程里进行，而其他worker线程只能够进入阻塞状态，在开的worker线程很多的情况下，始终有一定数量线程处于阻塞状态，降低服务器的并发处理效率，这里这么做第1-4条worker线程，每次只消费一个次级消息队列的消息，第5-8条线程一次消费整个次级消息队列的消息，第9-16条worker线程一次消费的消息数目大约是整个次级消息队列长度的一半，第17-24条线程一次消费的消息数大约是整个次级消息队列长度的四分之一，而第25-32条worker线程，则大约是次级消息总长度的八分之一。这样做的目的，大概是希望避免过多的worker线程为了等待spinlock解锁，而陷入阻塞状态（因为一些线程，一次消费多条甚至全部次级消息队列的消息，因此在消费期间，不会对global_mq进行入队和出队操作，入队和出队操作时加自旋锁的，因此就不会尝试去访问spinlock锁住的临界区，该线程就在相当一段时间内不会陷入阻塞），进而提升服务器的并发处理能力。这里还有一个细节值得注意，就是前四条线程，每次只是pop一个次级消息队列的消息出来，这样做也在一定程度上保证了没有服务会被饿死。  
     正如本节概述所说，一个worker线程被创建出来以后，则是不断尝试从global_mq中pop一个次级消息队列，并从次级消息队列中pop消息，进而通过服务的callback函数来消费该消息：  
-    ```
+    ``` C
     // skynet_start.c
     static void
     wakeup(struct monitor *m, int busy) {
@@ -752,7 +752,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
     ![image](https://raw.githubusercontent.com/Manistein/Photos/master/DailyUse/skynet_study/004thread_safe.png)  
     * 不论是global_mq也好，次级消息队列也好，他们在入队和出队操作时，都有加上spinlock，这样多个线程同时访问mq的时候，第一个访问者会进入临界区并锁住，其他线程会阻塞等待，直至该锁解除，这样也保证了线程安全。global_mq会同时被多个worker线程访问，这个很好理解，因为worker线程总是在不断尝试驱动不同的服务，要驱动服务，首先要取出至少一个消息，要获得消息，就要取出一个次级消息队列，而这个次级消息队列要从全局消息队列里取。虽然一个服务的callback函数，只能在一个worker线程内被调用，但是在多个worker线程中，可以向同一个次级消息队列push消息，即便是该次级消息队列所对应的服务正在执行callback函数，由于次级消息队列不是skynet_context的成员（skynet_context只是包含了次级消息队列的指针），因此改变次级消息队列不等于改变skynet_context上的数据，不会影响到该服务自身内存的数据，次级消息队列在进行push和pop操作的时候，会加上一个spinlock，当多个worker线程同时向同一个次级消息队列push消息时，第一个访问的worker线程，能够进入临界区，其他worker线程就阻塞等待，直至该临界区解锁，这样保证了线程安全。
     * 我们在通过handle从skynet_context list里获取skynet_context的过程中（比如派发消息时，要要先获取skynet_context指针，再调用该服务的callback函数），需要加上一个读写锁，因为在skynet运作的过程中，获取skynet_context，比创建skynet_context的情况要多得多，因此这里用了读写锁：  
-        ```
+        ``` C
         struct skynet_context * 
         skynet_handle_grab(uint32_t handle) {
         	struct handle_storage *s = H;
@@ -779,7 +779,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
 
 ## skynet如何启动一个lua服务
 每个skynet进程在启动时，都会启动一个lua层的launcher服务，该服务主要负责skynet运作期间，服务的创建工作。我们在lua层创建一个lua层服务时，通常会调用skynet.newservice函数  
-```
+``` lua
 -- skynet.lua
 function skynet.newservice(name, ...)
 	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...)
@@ -806,7 +806,7 @@ function command.LAUNCH(_, service, ...)
 end
 ```
 此时会发送消息给launcher服务，告诉launcher服务，要去创建一个snlua的c服务，并且绑定一个lua_State，该lua_State运行名称为name的lua脚本（这个脚本是入口），这里将c服务名称、脚本名称和参数，拼成一个字符串，并下传给c层  
-```
+``` lua
 -- skynet.manager
 function skynet.launch(...)
 	local addr = c.command("LAUNCH", table.concat({...}," "))
@@ -853,7 +853,7 @@ cmd_launch(struct skynet_context * context, const char * param) {
 }
 ```
 此时，我们就已经创建了一个snlua的c服务（c服务创建流程，上文已经有说明，这里不再赘述），在创建snlua服务的过程中，会对新的snlua服务进行初始化操作  
-```
+``` c
 // service_snlua.c
 static int
 _launch(struct skynet_context * context, void *ud, int type, int session, uint32_t source , const void * msg, size_t sz) {
@@ -882,7 +882,7 @@ snlua_init(struct snlua *l, struct skynet_context *ctx, const char * args) {
 }
 ```
 这里将_launch作为该snlua服务的callback函数，完成注册以后，向自己发送了一个消息，本snlua服务在接收到消息以后，就会调用_launch函数，此时，snlua服务的回调函数会被赋空值，并进行一次snlua绑定的lua_State的初始化  
-```
+``` c
 // service_snlua.c
 static int
 _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz) {
@@ -936,7 +936,7 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 }
 ```
 c初始化lua_State，先是将服务指针，skynet_context保存起来，以方便lua层调c的时候使用，然后就是一些配置设置，如设置lua服务脚本的存放路径，c服务so库的存放路径，lualib的存放路径等（加载和调用的时候，回到这些路径里找），然后该lua_State会加载一个用于执行指定脚本的loader.lua脚本，并将参数传给这个脚本（参数就是snlua服务绑定的lua脚本名称和传给这个脚本的参数拼起来的字符串，比如要启动一个名为scene的服务，那么对应的脚本名称就是scene.lua）  
-```
+``` lua
 -- lualib.loader.lua
 local args = {}
 for word in string.gmatch(..., "%S+") do
@@ -973,7 +973,7 @@ main(select(2, table.unpack(args)))
 skynet的lua服务，有一个proto表用于存放不同的消息类型的消息处理协议，一个协议，一般包含以下内容   
 * name：表示协议类型的字符串，如lua类型，其值则为"lua"
 * id：标识协议类型的整型值，类型有  
-```
+``` lua
 local skynet = {
 	-- read skynet.h
 	PTYPE_TEXT = 0,
@@ -995,7 +995,7 @@ local skynet = {
 * dispatch：消息队列里的指定类型的消息，最终会传到指定类型的dispatch函数来，这个函数一般是用户自己指定  
 
 现在通过启动一个example服务来举例说明，example服务的定义如下所示：  
-```
+``` lua
 -- example.lua
 local skynet = require "skynet"
 
@@ -1027,7 +1027,7 @@ end)
 
 ```
 启动一个example服务，意味着loader脚本，最终执行的那个脚本就是example.lua这个脚本，在执行这个脚本的过程中，首先和其他所有的lua服务一样，这个example服务需要调用skynet.lua里的api，因此，需要require一下skynet.lua这个脚本，而在require的过程中，就已经注册了几个回调消息处理协议：  
-```
+``` lua
 -- skynet.lua
 
 ...
@@ -1060,7 +1060,7 @@ end
 
 ```
 这里事先注册了lua类型，response类型和error类型的消息处理协议，也就是说，一个lua服务至少保证lua类型、response类型和error类型默认有消息处理协议，而注册函数的流程就是将这个消息处理协议的结构存入proto表中，当一个lua服务接收到消息时，则会根据其消息类型，在proto表中找到对应的处理协议以后，调用该协议的unpack函数，将参数解包以后，再传给该协议的dispatch函数，最后达到驱动lua服务的目的：  
-```
+``` lua
 -- skynet.lua
 function skynet.register_protocol(class)
 	local name = class.name
@@ -1072,7 +1072,7 @@ function skynet.register_protocol(class)
 end
 ```
 现在回到我们的example脚本，它注册了一个text类消息处理协议，然后为lua协议注册了一个回调函数，我们注意到，在skynet.lua这个脚本中，虽然又在proto表中注册lua类型的处理函数，但是没有定义该类型的回调函数dispatch，这个dispatch函数，需要用户自己定义，一般使用skynet.dispatch来完成  
-```
+``` lua
 -- skynet.lua
 function skynet.dispatch(typename, func)
 	local p = proto[typename]
@@ -1088,7 +1088,7 @@ end
 exmaple脚本为lua类型消息处理协议，注册了一个lua层消息回调函数skynet.dispatch_message，后面example服务接收到的lua类型消息，都会被传到这个函数内  
 最后，example脚本执行了skynet.start函数，完成启动一个lua服务的最后工作  
 
-```
+``` lua
 -- skynet.lua
 function skynet.start(start_func)
 	c.callback(skynet.dispatch_message)
@@ -1099,7 +1099,7 @@ end
 ```
 这个函数，首先lua服务注册了一个lua层的消息回调函数，前面已经讨论过，一个c服务在消费次级消息队列的消息时，最终会调用callback函数，而这里做的工作则是，通过这个c层的callback函数，再转调lua层消息回调函数skynet.dispatch_message
 
-```
+``` c
 // lua-skynet.c
 static int
 _cb(struct skynet_context * context, void * ud, int type, int session, uint32_t source, const void * msg, size_t sz) {
@@ -1151,7 +1151,7 @@ _callback(lua_State *L) {
 这里将snlua这个skynet_context的callback函数赋值为_cb，而_cb最终又会通过lua_State转调lua层的skynet.dispatch_message函数，也就是说，发送给snlua服务的消息，最终都是交给lua层去处理的  
 在完成lua层callback函数的注册以后，接下来就是执行lua服务的启动函数（也就是skynet.start函数的第二个参数）  
 
-```
+``` lua
 -- skynet.lua
 local function init_template(start)
 	init_all()
@@ -1237,7 +1237,7 @@ end
 3. skynet消息处理机制  
 在前文，我们已经说明了，一个lua服务在接收消息时，最终会传给lua层的消息回调函数skynet.dispatch_message  
 
-```
+``` lua
 -- skynet.lua
 function skynet.dispatch_message(...)
 	local succ, err = pcall(raw_dispatch_message,...)
@@ -1262,7 +1262,7 @@ end
 ```
 消息处理函数，只做两件事情，一件是消费当前消息，另一件则是按顺序执行之前通过调用skynet.fork创建的协程，这里我么只关注处理当前消息的情况raw_dispatch_message  
 
-```
+``` lua
 -- skynet.lua
 local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 	-- skynet.PTYPE_RESPONSE = 1, read skynet.h
@@ -1304,7 +1304,7 @@ end
 
 这里对协程的复用，做一些小小的说明，创建协程的函数，非常有意思，为了进一步提高性能，skynet对协程做了缓存，也就是说，一个协程在使用完以后，并不是让他结束掉，而是把上一次使用的dispatch函数清掉，并且挂起协程，放入一个协程池中，供下一次调用。下次使用时，他将执行新的dispatch函数，只有当协程池中没有协程时，才会去创建新协程，如此循环往复  
 
-```
+``` lua
 -- skynet.lua
 local function co_create(f)
 	local co = table.remove(coroutine_pool)
@@ -1338,7 +1338,7 @@ end
 ```
 上面的逻辑在完成回调函数调用后，会对协程进行回收，它会将回调函数清掉，并且将当前协程写入协程缓存列表中，然后挂起协程，挂起类型为“EXIT”，如上面的代码所示，对挂起类型进行处理的函数是suspend函数，当一个协程结束时，会进行如下操作  
 
-```
+``` lua
 -- skynet.lua
 function suspend(co, result, command, param, size)
 ...
@@ -1357,7 +1357,7 @@ end
 协程发起一次同步RPC调用（挂起状态类型为“CALL”），或者投入睡眠时（挂起状态类型为“SLEEP”），也会使自己挂起，此时要为当前的协程分配一个唯一的session变量，并且以session为key，协程地址为value存入一个table表中，目的是，当对方返回结果，或者定时器到达时间timer线程向本服务发送一个唤醒原来协程的消息时，能够通过session找到对应的协程，并将其唤醒，从之前挂起的地方继续执行下去。  
 当一个服务向本服务发起一次call调用时，本服务需要返回一个结果变量给请求者，此时也需要将本协程挂起，向请求者返回结果时，需要调用如下接口  
 
-```
+``` lua
 -- skynet.lua
 function skynet.ret(msg, sz)
 	msg = msg or ""
@@ -1393,7 +1393,7 @@ end
 4. 对其他服务的call访问  
 一个服务，向另一个服务发起同步rpc调用，首先要挂起当前协程，然后是将目的服务发送一个消息，并且在本地记录一个唯一的session值，并以其为key，以挂起的协程地址为value存入一个table中，当目标服务返回结果时，根据这个session找回对应的协程，并且调用resume函数唤醒他。  
 
-```
+``` lua
 -- skynet.lua
 local function yield_call(service, session)
 	watching_session[session] = service
@@ -1446,7 +1446,7 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 我们使用定时器的两种情况，一种是设置一个定时器，让某个函数在t秒后执行；还有一种则是，在执行某个函数的过程中，暂停t秒后继续执行。  
 第一种情况，我们使用skynet.timeout来执行：  
 
-```
+``` lua
 -- skynet.lua
 function skynet.timeout(ti, func)
 	local session = c.intcommand("TIMEOUT",ti)
@@ -1458,7 +1458,7 @@ end
 ```
 这里，首先向定时器注册了一个事件，这个事件的信息包含服务地址、多少秒后触发定时事件以及一个session变量；然后为执行函数创建一个协程，协程创建后默认不执行，因此目前的func相当于冻结状态，最后lua层会以session为key，协程地址为value存入一个table表中。当该事件的触发时间到的时候，timer线程会取出时间数据，向事件所属的地址发送一条RESPONSE类型的消息  
 
-```
+``` c
 // skynet_timer.c
 static inline void
 dispatch_list(struct timer_node *current) {
@@ -1481,7 +1481,7 @@ dispatch_list(struct timer_node *current) {
 服务收到这个消息以后，会根据session的值，找回协程地址，并调用resume函数，唤醒这个协程，这样就完成了t秒后执行某个函数的功能。  
 第二种情况，我们使用skynet.sleep来执行  
 
-```
+``` lua
 -- skynet.lua
 function skynet.sleep(ti)
 	local session = c.intcommand("TIMEOUT",ti)
@@ -1514,7 +1514,7 @@ end
 1. skynet网络层基本数据结构  
     在开始讨论具体的流程之前，首先我们要讨论一下socket部分的主要数据结构  
     
-    ```
+    ``` c
     // socket_server.c
     struct socket {
     	uintptr_t opaque;       // 与本socket关联的服务地址，socket接收到的消息，最后将会传送到这个服务商
@@ -1551,7 +1551,7 @@ end
     每次有epoll事件触发时，都会往epoll事件列表ev中写入，并返回事件的数量，每处理完一个事件，event_index就会增加一（每次epoll事件触发时，event_index都会被重置为0）。  
     socket_server结构中，有一个socket列表--slot列表，这里存放的都是socket对象实例，slot列表和epoll事件关联度非常大，每当一个连接建立时，该连接的fd会增加一个epoll事件，我们来看看如何为fd增加一个epoll可读事件  
     
-    ```
+    ``` c
     // socket_server.c
     static struct socket *
     new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque, bool add) {
@@ -1591,7 +1591,7 @@ end
     
     这里我们可以看到，要让epoll监听fd，当这个fd有事件时，epoll会返回事件，但是epoll不会告诉你，怎么去处理这个事件，因此，需要根据socket的type来选择正确的处理逻辑（这里需要注意的是，epoll事件的data的ptr指针，指向一个socket结构的指针）  
     
-    ```
+    ``` c
     // return type
     int 
     socket_server_poll(struct socket_server *ss, struct socket_message * result, int * more) {
@@ -1638,7 +1638,7 @@ end
 2. skynet网络层的初始化流程  
     在启动一个skynet节点的时候，首先会对socket模块进行初始化：  
 
-    ```
+    ``` c
     // skynet_socket.c
     static struct socket_server * SOCKET_SERVER = NULL;
     
