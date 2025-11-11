@@ -4,9 +4,15 @@
         <link>https://hugodoit.pages.dev/</link>
         <description>Hugo DoIt 主题官方文档</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
-            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 11 Oct 2025 14:30:48 &#43;0800</lastBuildDate>
+            <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 11 Nov 2025 10:57:00 &#43;0800</lastBuildDate>
             <atom:link href="https://hugodoit.pages.dev/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Epoll</title>
+    <link>https://hugodoit.pages.dev/epoll/</link>
+    <pubDate>Tue, 11 Nov 2025 10:57:00 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/epoll/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>Windows平台docker修改容器的端口映射配置</title>
     <link>https://hugodoit.pages.dev/windows%E5%B9%B3%E5%8F%B0docker%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE/</link>
     <pubDate>Sat, 11 Oct 2025 14:30:48 &#43;0800</pubDate><author>
@@ -63,14 +69,5 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/theme-documentation-basics/featured-image.webp" referrerpolicy="no-referrer">
             </div><p>探索 Hugo - <strong>DoIt</strong> 主题的全部内容和背后的核心概念.</p>]]></description>
-</item><item>
-    <title>主题文档 - 内容</title>
-    <link>https://hugodoit.pages.dev/theme-documentation-content/</link>
-    <pubDate>Wed, 04 Mar 2020 16:30:05 &#43;0800</pubDate><author>
-                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/theme-documentation-content/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/theme-documentation-content/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>了解如何在 <strong>DoIt</strong> 主题中快速, 直观地创建和组织内容.</p>]]></description>
 </item></channel>
 </rss>

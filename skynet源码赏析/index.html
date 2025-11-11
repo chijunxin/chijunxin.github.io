@@ -1541,6 +1541,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 <blockquote>
   <p>引证来源：https://en.wikipedia.org/wiki/Mutual_exclusion  Software solution这一节<br>
 It is often preferable to use synchronization facilities provided by an operating system&rsquo;s multithreading library, which will take advantage of hardware solutions if possible but will use software solutions if no hardware solutions exist. For example, when the operating system&rsquo;s lock library is used and a thread tries to acquire an already acquired lock, the operating system could suspend the thread using a context switch and swap it out with another thread that is ready to be run, or could put that processor into a low power state if there is no other thread that can be run. Therefore, most modern mutual exclusion methods attempt to reduce latency and busy-waits by using queuing and context switches. However, if the time that is spent suspending a thread and then restoring it can be proven to be always more than the time that must be waited for a thread to become ready to run after being blocked in a particular situation, then spinlocks are an acceptable solution (for that situation only).[citation needed]</p>
+
 </blockquote><ul>
 <li>自旋锁（spinlock）</li>
 </ul>
@@ -1552,6 +1553,7 @@ It is often preferable to use synchronization facilities provided by an operatin
 <blockquote>
   <p>引证来源：https://en.wikipedia.org/wiki/Spinlock<br>
 In software engineering, a spinlock is a lock which causes a thread trying to acquire it to simply wait in a loop (&ldquo;spin&rdquo;) while repeatedly checking if the lock is available. Since the thread remains active but is not performing a useful task, the use of such a lock is a kind of busy waiting. Once acquired, spinlocks will usually be held until they are explicitly released, although in some implementations they may be automatically released if the thread being waited on (that which holds the lock) blocks, or &ldquo;goes to sleep&rdquo;.</p>
+
 </blockquote><ul>
 <li>读写锁（readers–writer lock）</li>
 </ul>
@@ -1575,6 +1577,7 @@ In software engineering, a spinlock is a lock which causes a thread trying to ac
   <p>引证来源：https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock<br>
 In computer science, a readers–writer (RW) or shared-exclusive lock (also known as a multiple readers/single-writer lock[1] or multi-reader lock[2]) is a synchronization primitive that solves one of the readers–writers problems. An RW lock allows concurrent access for read-only operations, while write operations require exclusive access. This means that multiple threads can read the data in parallel but an exclusive lock is needed for writing or modifying data. When a writer is writing the data, all other writers or readers will be blocked until the writer is finished writing. A common use might be to control access to a data structure in memory that cannot be updated atomically and is invalid (and should not be read by another thread) until the update is complete.<br>
 Readers–writer locks are usually constructed on top of mutexes and condition variables, or on top of semaphores.</p>
+
 </blockquote><ul>
 <li>条件变量（condition variables）<br>
 概述：假设A,B,C三条线程，其中B,C线程加了cond_wait锁并投入睡眠，而A线程则在某个条件触发时，会通过signal通知B,C线程，从而唤醒B和C线程，更多内容请查阅维基百科，<a href="https://en.wikipedia.org/wiki/Monitor_%28synchronization%29#Condition_variables" target="_blank" rel="noopener noreferrer">条件变量词条</a></li>
@@ -3756,6 +3759,7 @@ d) 返回第a步</li>
 <blockquote>
   <p>引证来源：https://en.wikipedia.org/wiki/Thread_(computing) 【Processes, kernel threads, user threads, and fibers】这一节<br>
 Fibers are an even lighter unit of scheduling which are cooperatively scheduled: a running fiber must explicitly &ldquo;yield&rdquo; to allow another fiber to run, which makes their implementation much easier than kernel or user threads. A fiber can be scheduled to run in any thread in the same process. This permits applications to gain performance improvements by managing scheduling themselves, instead of relying on the kernel scheduler (which may not be tuned for the application). Parallel programming environments such as OpenMP typically implement their tasks through fibers. Closely related to fibers are coroutines, with the distinction being that coroutines are a language-level construct, while fibers are a system-level construct.</p>
+
 </blockquote><p>如上所示，协程和纤程十分相似（纤程是线程下的执行单位），区别在于，纤程是操作系统实现的，而协程是语言本身提供。</p>
 <ol start="2">
 <li>协程的使用<br>
@@ -3764,18 +3768,25 @@ Fibers are an even lighter unit of scheduling which are cooperatively scheduled:
 <blockquote>
   <p>引证来源：http://cloudwu.github.io/lua53doc/manual.html#2.6<br>
 Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了一段独立的执行线程。 然而，与多线程系统中的线程的区别在于， 协程仅在显式调用一个让出（yield）函数时才挂起当前的执行。</p>
+
 </blockquote><blockquote>
   <p>调用函数 coroutine.create 可创建一个协程。 其唯一的参数是该协程的主函数。 create 函数只负责新建一个协程并返回其句柄 （一个 thread 类型的对象）； 而不会启动该协程。</p>
+
 </blockquote><blockquote>
   <p>调用 coroutine.resume 函数执行一个协程。 第一次调用 coroutine.resume 时，第一个参数应传入 coroutine.create 返回的线程对象，然后协程从其主函数的第一行开始执行。 传递给 coroutine.resume 的其他参数将作为协程主函数的参数传入。 协程启动之后，将一直运行到它终止或 让出。</p>
+
 </blockquote><blockquote>
   <p>协程的运行可能被两种方式终止： 正常途径是主函数返回 （显式返回或运行完最后一条指令）； 非正常途径是发生了一个未被捕获的错误。 对于正常结束， coroutine.resume 将返回 true， 并接上协程主函数的返回值。 当错误发生时， coroutine.resume 将返回 false 与错误消息。</p>
+
 </blockquote><blockquote>
   <p>通过调用 coroutine.yield 使协程暂停执行，让出执行权。 协程让出时，对应的最近 coroutine.resume 函数会立刻返回，即使该让出操作发生在内嵌函数调用中 （即不在主函数，但在主函数直接或间接调用的函数内部）。 在协程让出的情况下， coroutine.resume 也会返回 true， 并加上传给 coroutine.yield 的参数。 当下次重启同一个协程时， 协程会接着从让出点继续执行。 此时，此前让出点处对 coroutine.yield 的调用 会返回，返回值为传给 coroutine.resume 的第一个参数之外的其他参数。</p>
+
 </blockquote><blockquote>
   <p>与 coroutine.create 类似， coroutine.wrap 函数也会创建一个协程。 不同之处在于，它不返回协程本身，而是返回一个函数。 调用这个函数将启动该协程。 传递给该函数的任何参数均当作 coroutine.resume 的额外参数。 coroutine.wrap 返回 coroutine.resume 的所有返回值，除了第一个返回值（布尔型的错误码）。 和 coroutine.resume 不同， coroutine.wrap 不会捕获错误； 而是将任何错误都传播给调用者。</p>
+
 </blockquote><blockquote>
   <p>下面的代码展示了一个协程工作的范例：</p>
+
 </blockquote><pre><code> function foo (a)
    print(&quot;foo&quot;, a)
    return coroutine.yield(2*a)
@@ -3797,6 +3808,7 @@ Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了
 </code></pre>
 <blockquote>
   <p>当你运行它，将产生下列输出：</p>
+
 </blockquote><pre><code> co-body 1       10
  foo     2
  main    true    4
@@ -3808,6 +3820,7 @@ Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了
 </code></pre>
 <blockquote>
   <p>你也可以通过 C API 来创建及操作协程： 参见函数 lua_newthread， lua_resume， 以及 lua_yield。</p>
+
 </blockquote><p>这里对lua协程的代码使用，做了充分的说明，对我们理解lua层消息派发十分有帮助
 3. skynet消息处理机制<br>
 在前文，我们已经说明了，一个lua服务在接收消息时，最终会传给lua层的消息回调函数skynet.dispatch_message</p>
@@ -5414,10 +5427,12 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 <blockquote>
   <p>引证来源：http://man7.org/linux/man-pages/man2/epoll_create.2.html
 DESCRIPTION         top</p>
+
 </blockquote><blockquote>
   <p>epoll_create() creates a new epoll(7) instance.  Since Linux 2.6.8,
 the size argument is ignored, but must be greater than zero; see
 NOTES below.</p>
+
 </blockquote><blockquote>
   <p>epoll_create() returns a file descriptor referring to the new epoll
 instance.  This file descriptor is used for all the subsequent calls
@@ -5425,6 +5440,7 @@ to the epoll interface.  When no longer required, the file descriptor
 returned by epoll_create() should be closed by using close(2).  When
 all file descriptors referring to an epoll instance have been closed,
 the kernel destroys the instance and releases the associated</p>
+
 </blockquote><blockquote>
   <p>NOTES      <br>
 In the initial epoll_create() implementation, the size argument
@@ -5438,6 +5454,7 @@ kernel dynamically sizes the required data structures without needing
 the hint), but size must still be greater than zero, in order to
 ensure backward compatibility when new epoll applications are run on
 older kernels.</p>
+
 </blockquote><p>此外，skynet的网络层，还在单个节点内使用管道，这里的目的是，其他线程向socket线程发送数据包，这样做的好处是，socket线程能够像处理网络消息一样，处理来自其他线程的请求，并且完全不用加任何锁，保证了线程安全，也简化了逻辑复杂度。<br>
 再后面则是对socket列表的初始化操作，这里没什么好说的了。</p>
 </li>
@@ -5546,7 +5563,7 @@ Cluster设计请查看<a href="http://blog.codingnow.com/2017/03/skynet_cluster.
                 Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">Utterances</a>.
             </noscript></div></article></main><footer class="footer">
         <div class="footer-container"><div class="footer-line">
-                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.151.0">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
+                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.152.2">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"/></svg> DoIt</a>
                 </div><div class="footer-line"><svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 448c-110.532 0-200-89.451-200-200 0-110.531 89.451-200 200-200 110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200zm107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396-82.43 0-140.484-61.425-140.484-141.567 0-79.152 60.275-139.401 139.762-139.401 55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921-8.595-6.776-31.814-22.538-61.708-22.538-48.303 0-77.916 35.33-77.916 80.082 0 41.589 26.888 83.692 78.277 83.692 32.657 0 56.843-19.039 65.726-27.225 5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518z"/></svg>2019 - 2025<span class="author">&nbsp;<a href="https://github.com/HEIGE-PCloud" target="_blank" rel="noopener noreferrer">PCloud</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
