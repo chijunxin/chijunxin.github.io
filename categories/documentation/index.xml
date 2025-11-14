@@ -5,6 +5,12 @@
         <description>文档 - 分类 - 86</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>heige.pcloud@outlook.com (PCloud)</managingEditor>
             <webMaster>heige.pcloud@outlook.com (PCloud)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://hugodoit.pages.dev/categories/documentation/" rel="self" type="application/rss+xml" /><item>
+    <title>Linux压测修改内核参数</title>
+    <link>https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/</link>
+    <pubDate>Fri, 14 Nov 2025 18:18:07 &#43;0800</pubDate><author>
+                        <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>Epoll</title>
     <link>https://hugodoit.pages.dev/epoll/</link>
     <pubDate>Tue, 11 Nov 2025 10:57:00 &#43;0800</pubDate><author>
@@ -58,14 +64,5 @@
     <pubDate>Sun, 28 Sep 2025 15:31:05 &#43;0800</pubDate><author>
                         <name>86</name><uri>https://hugodoit.pages.dev/authors/86/</uri></author><guid>https://hugodoit.pages.dev/websocket%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</guid>
     <description><![CDATA[]]></description>
-</item><item>
-    <title>主题文档 - 基本概念</title>
-    <link>https://hugodoit.pages.dev/theme-documentation-basics/</link>
-    <pubDate>Tue, 03 Mar 2020 21:40:32 &#43;0800</pubDate><author>
-                        <name>Dillon</name><uri>https://dillonzq.com</uri></author><author>
-                        <name>PCloud</name><uri>https://github.com/HEIGE-PCloud</uri><email>heige.pcloud@outlook.com</email></author><guid>https://hugodoit.pages.dev/theme-documentation-basics/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/theme-documentation-basics/featured-image.webp" referrerpolicy="no-referrer">
-            </div><p>探索 Hugo - <strong>DoIt</strong> 主题的全部内容和背后的核心概念.</p>]]></description>
 </item></channel>
 </rss>
