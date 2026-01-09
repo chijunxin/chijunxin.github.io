@@ -283,7 +283,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 <li>skynet一共有4种线程，monitor线程用于检测节点内的消息是否堵住，timer线程运行定时器，socket线程进行网络数据的收发，worker线程则负责对消息队列进行调度（worker线程的数量，可以通过配置表指定）。消息调度规则是，每条worker线程，每次从全局消息队列中pop出一个次级消息队列，并从次级消息队列中pop出一条消息，并找到该次级消息队列的所属服务，将消息传给该服务的callback函数，执行指定业务，当逻辑执行完毕时，再将次级消息队列push回全局消息队列中。因为每个服务只有一个次级消息队列，每当一条worker线程，从全局消息队列中pop出一个次级消息队列时，其他线程是拿不到同一个服务，并调用callback函数，因此不用担心一个服务同时在多条线程内消费不同的消息，一个服务执行，不存在并发，线程是安全的</li>
 <li>socket线程、timer线程甚至是worker线程，都有可能会往指定服务的次级消息队列中push消息，push函数内有加一个自旋锁，避免同时多条线程同时向一个次级消息队列push消息的惨局。<br>
 综上所述，我们可以将skynet的机制，用一张图概括<br>
-<img class="tw-inline" loading="lazy" src='/002skynet_message_transfer_3324618095176381228.png' srcset="/002skynet_message_transfer_3324618095176381228_hu_ec4090631aabf69c.webp 800w, /002skynet_message_transfer_3324618095176381228_hu_f0a95e58cfbc590e.webp 1200w, /002skynet_message_transfer_3324618095176381228_hu_d948b88ab4e3df3b.webp 1600w"  alt="image" height="622" width="856">图1<br>
+<img class="tw-inline" loading="lazy" src='/002skynet_message_transfer_3324618095176381228.png' srcset="/002skynet_message_transfer_3324618095176381228_hu_68ee41af378827fe.webp 800w, /002skynet_message_transfer_3324618095176381228_hu_a8388e8efeffdc43.webp 1200w, /002skynet_message_transfer_3324618095176381228_hu_5c3e53c894627f74.webp 1600w"  alt="image" height="622" width="856">图1<br>
 从上面讨论可以得出如下结论，我们所写的不同的业务逻辑，可以运行在不同的独立的沙盒环境中，他们之间是通过消息队列来进行交互的。worker、timer和socket线程里运行的模块，都有机会向特定的服务push消息，他们是消息的生产者，而worker线程内的模块，同时也是消息的消费者（确切的说，应该是那些服务）<br>
 注意：服务模块要将数据，通过socket发送给客户端时，并不是将数据写入消息队列，而是通过管道从worker线程，发送给socket线程，并交由socket转发。此外，设置定时器也不走消息队列，而是直接将在定时器模块，加入一个timer_node。其实这样也很好理解，因为timer和socket线程内运行的模块并不是这里的context，因此消息队列他们无法消费。<br>
 在overview中，我们讨论了skynet的部分核心机制（如消息调度），很多细节并未展开仔细去讨论，不过本节的目标就是为了树立一个宏观的概述，后面的内容，将基于此框架更加深入的进行讨论与研究。对于本文，我极力避免贴大段的代码，因为大段的代码，只会让我们迷失在汪洋大海之中，只有在必要的地方，才会贴上代码加以论述。<br>
@@ -292,7 +292,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 <h2 id="skynet基本结构" class="headerLink">
     <a href="#skynet%e5%9f%ba%e6%9c%ac%e7%bb%93%e6%9e%84" class="header-mark"></a>4 skynet基本结构</h2><p>1.skynet目录结构<br>
 学习一个开源框架，首先要做的就是查看目录结构，我们有理由相信，越好的项目，目录组织越合理，结构越清晰，代码目录必然是按照某种规律进行组织，目录组织也是构架的一部分。skynet目录组织如下所示<br>
-<img class="tw-inline" loading="lazy" src='/001skynet_folder_architecture_8177783981384409462.png' srcset="/001skynet_folder_architecture_8177783981384409462_hu_c93b473514b29eba.webp 800w, /001skynet_folder_architecture_8177783981384409462_hu_3639f23aa176baa3.webp 1200w, /001skynet_folder_architecture_8177783981384409462_hu_46a0b30110e65114.webp 1600w"  alt="image" height="334" width="676">图2<br>
+<img class="tw-inline" loading="lazy" src='/001skynet_folder_architecture_8177783981384409462.png' srcset="/001skynet_folder_architecture_8177783981384409462_hu_fcfc6a8d6da5b5d8.webp 800w, /001skynet_folder_architecture_8177783981384409462_hu_5d6e47e2cf364ce.webp 1200w, /001skynet_folder_architecture_8177783981384409462_hu_2f992be2579fe92.webp 1600w"  alt="image" height="334" width="676">图2<br>
 从上面目录结构图来看，越是往下的层次，应用领域越广泛。越是往上的层级，针对性越强，应用领域越小，和业务越相关。</p>
 <ul>
 <li>3rd目录：提供lua语言支持、 jemalloc（内存管理模块）、md5加密等，这些模块在开发领域有着广泛的应用。</li>
@@ -400,29 +400,29 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_module.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="kt">void</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">skynet_dl_create</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="kt">void</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">skynet_dl_create</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">skynet_dl_init</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">inst</span><span class="p">,</span> <span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">parm</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">skynet_dl_release</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">inst</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">skynet_dl_signal</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">inst</span><span class="p">,</span> <span class="kt">int</span> <span class="n">signal</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_module</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span><span class="p">;</span>          <span class="c1">// C服务名称，一般是C服务的文件名
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">void</span> <span class="o">*</span> <span class="n">module</span><span class="p">;</span>              <span class="c1">// 访问该so库的dl句柄，该句柄通过dlopen函数获得
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">skynet_dl_create</span> <span class="n">create</span><span class="p">;</span>    <span class="c1">// 绑定so库中的xxx_create函数，通过dlsym函数实现绑定，调用该create即是调用xxx_create
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">skynet_dl_init</span> <span class="n">init</span><span class="p">;</span>        <span class="c1">// 绑定so库中的xxx_init函数，调用该init即是调用xxx_init
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">skynet_dl_release</span> <span class="n">release</span><span class="p">;</span>  <span class="c1">// 绑定so库中的xxx_release函数，调用该release即是调用xxx_release
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">skynet_dl_signal</span> <span class="n">signal</span><span class="p">;</span>    <span class="c1">// 绑定so库中的xxx_signal函数，调用该signal即是调用xxx_signal
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="o">*</span> <span class="n">module</span><span class="p">;</span>              <span class="c1">// 访问该so库的dl句柄，该句柄通过dlopen函数获得
+</span></span></span><span class="line"><span class="cl">	<span class="n">skynet_dl_create</span> <span class="n">create</span><span class="p">;</span>    <span class="c1">// 绑定so库中的xxx_create函数，通过dlsym函数实现绑定，调用该create即是调用xxx_create
+</span></span></span><span class="line"><span class="cl">	<span class="n">skynet_dl_init</span> <span class="n">init</span><span class="p">;</span>        <span class="c1">// 绑定so库中的xxx_init函数，调用该init即是调用xxx_init
+</span></span></span><span class="line"><span class="cl">	<span class="n">skynet_dl_release</span> <span class="n">release</span><span class="p">;</span>  <span class="c1">// 绑定so库中的xxx_release函数，调用该release即是调用xxx_release
+</span></span></span><span class="line"><span class="cl">	<span class="n">skynet_dl_signal</span> <span class="n">signal</span><span class="p">;</span>    <span class="c1">// 绑定so库中的xxx_signal函数，调用该signal即是调用xxx_signal
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_module.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define MAX_MODULE_TYPE 32
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define MAX_MODULE_TYPE 32
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">modules</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">count</span><span class="p">;</span>                  <span class="c1">// modules的数量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">spinlock</span> <span class="n">lock</span><span class="p">;</span>       <span class="c1">// 自旋锁，避免多个线程同时向skynet_module写入数据，保证线程安全
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">path</span><span class="p">;</span>          <span class="c1">// 由skynet配置表中的cpath指定，一般包含./cservice/?.so路径
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">skynet_module</span> <span class="n">m</span><span class="p">[</span><span class="n">MAX_MODULE_TYPE</span><span class="p">];</span>  <span class="c1">// 存放服务模块的数组，最多32类
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">spinlock</span> <span class="n">lock</span><span class="p">;</span>       <span class="c1">// 自旋锁，避免多个线程同时向skynet_module写入数据，保证线程安全
+</span></span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">path</span><span class="p">;</span>          <span class="c1">// 由skynet配置表中的cpath指定，一般包含./cservice/?.so路径
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_module</span> <span class="n">m</span><span class="p">[</span><span class="n">MAX_MODULE_TYPE</span><span class="p">];</span>  <span class="c1">// 存放服务模块的数组，最多32类
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">modules</span> <span class="o">*</span> <span class="n">M</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span></span></span></code></pre>
 </div>
@@ -517,7 +517,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// 引证来源：https://linux.die.net/man/3/dlopen
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="o">*</span><span class="nf">dlopen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flag</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="nf">dlopen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flag</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="nf">dlsym</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">symbol</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="nf">dlopen</span><span class="p">()</span>
@@ -624,44 +624,44 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_context</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="o">*</span> <span class="n">instance</span><span class="p">;</span>                <span class="c1">// 由指定module的create函数，创建的数据实例指针，同一类服务可能有多个实例，
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	                                <span class="c1">// 因此每个服务都应该有自己的数据
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">	                                <span class="c1">// 因此每个服务都应该有自己的数据
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span> <span class="n">mod</span><span class="p">;</span>     <span class="c1">// 引用服务module的指针，方便后面对create、init、signal和release函数进行调用
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">void</span> <span class="o">*</span> <span class="n">cb_ud</span><span class="p">;</span>                   <span class="c1">// 调用callback函数时，回传给callback的userdata，一般是instance指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">skynet_cb</span> <span class="n">cb</span><span class="p">;</span>                   <span class="c1">// 服务的消息回调函数，一般在skynet_module的init函数里指定
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">;</span>    <span class="c1">// 服务专属的次级消息队列指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">FILE</span> <span class="o">*</span> <span class="n">logfile</span><span class="p">;</span>                 <span class="c1">// 日志句柄
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">char</span> <span class="n">result</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>                <span class="c1">// 操作skynet_context的返回值，会写到这里
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">;</span>                <span class="c1">// 标识唯一context的服务id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">session_id</span><span class="p">;</span>                 <span class="c1">// 在发出请求后，收到对方的返回消息时，通过session_id来匹配一个返回，对应哪个请求
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">ref</span><span class="p">;</span>                        <span class="c1">// 引用计数变量，当为0时，表示内存可以被释放
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">bool</span> <span class="n">init</span><span class="p">;</span>                      <span class="c1">// 是否完成初始化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">bool</span> <span class="n">endless</span><span class="p">;</span>                   <span class="c1">// 消息是否堵住
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="o">*</span> <span class="n">cb_ud</span><span class="p">;</span>                   <span class="c1">// 调用callback函数时，回传给callback的userdata，一般是instance指针
+</span></span></span><span class="line"><span class="cl">	<span class="n">skynet_cb</span> <span class="n">cb</span><span class="p">;</span>                   <span class="c1">// 服务的消息回调函数，一般在skynet_module的init函数里指定
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">;</span>    <span class="c1">// 服务专属的次级消息队列指针
+</span></span></span><span class="line"><span class="cl">	<span class="n">FILE</span> <span class="o">*</span> <span class="n">logfile</span><span class="p">;</span>                 <span class="c1">// 日志句柄
+</span></span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">result</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>                <span class="c1">// 操作skynet_context的返回值，会写到这里
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">;</span>                <span class="c1">// 标识唯一context的服务id
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">session_id</span><span class="p">;</span>                 <span class="c1">// 在发出请求后，收到对方的返回消息时，通过session_id来匹配一个返回，对应哪个请求
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">ref</span><span class="p">;</span>                        <span class="c1">// 引用计数变量，当为0时，表示内存可以被释放
+</span></span></span><span class="line"><span class="cl">	<span class="kt">bool</span> <span class="n">init</span><span class="p">;</span>                      <span class="c1">// 是否完成初始化
+</span></span></span><span class="line"><span class="cl">	<span class="kt">bool</span> <span class="n">endless</span><span class="p">;</span>                   <span class="c1">// 消息是否堵住
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="n">CHECKCALLING_DECL</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_handle.c
 </span></span></span><span class="line"><span class="cl"><span class="c1">// 这个结构用于记录，服务对应的别名，当应用层为某个服务命名时，会写到这里来
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">handle_name</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">handle_name</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span> <span class="n">name</span><span class="p">;</span>                   <span class="c1">// 服务别名
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">;</span>               <span class="c1">// 服务id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">;</span>               <span class="c1">// 服务id
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">handle_storage</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">rwlock</span> <span class="n">lock</span><span class="p">;</span>            <span class="c1">// 读写锁
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">harbor</span><span class="p">;</span>               <span class="c1">// harbor id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint32_t</span> <span class="n">handle_index</span><span class="p">;</span>         <span class="c1">// 创建下一个服务时，该服务的slot idx，一般会先判断该slot是否被占用，后面会详细讨论
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">slot_size</span><span class="p">;</span>                 <span class="c1">// slot的大小，一定是2^n，初始值是4
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">**</span> <span class="n">slot</span><span class="p">;</span> <span class="c1">// skynet_context list
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">handle_index</span><span class="p">;</span>         <span class="c1">// 创建下一个服务时，该服务的slot idx，一般会先判断该slot是否被占用，后面会详细讨论
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">slot_size</span><span class="p">;</span>                 <span class="c1">// slot的大小，一定是2^n，初始值是4
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">**</span> <span class="n">slot</span><span class="p">;</span> <span class="c1">// skynet_context list
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">name_cap</span><span class="p">;</span>                  <span class="c1">// 别名列表大小，大小为2^n
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">name_count</span><span class="p">;</span>                <span class="c1">// 别名数量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">handle_name</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>      <span class="c1">// 别名列表
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">name_count</span><span class="p">;</span>                <span class="c1">// 别名数量
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">handle_name</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>      <span class="c1">// 别名列表
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">handle_storage</span> <span class="o">*</span><span class="n">H</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span></span></span></code></pre>
 </div>
@@ -760,44 +760,44 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_mq.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">skynet_message</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_message</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">source</span><span class="p">;</span>            <span class="c1">// 消息发送方的服务地址
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="c1">// 如果这是一个回应消息，那么要通过session找回对应的一次请求，在lua层，我们每次调用call的时候，都会往对  
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 方的消息队列中，push一个消息，并且生成一个session，然后将本地的协程挂起，挂起时，会以session为key，协程句  
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 柄为值，放入一个table中，当回应消息送达时，通过session找到对应的协程，并将其唤醒。后面章节会详细讨论
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">session</span><span class="p">;</span> 
+</span></span></span><span class="line"><span class="cl">	<span class="c1">// 方的消息队列中，push一个消息，并且生成一个session，然后将本地的协程挂起，挂起时，会以session为key，协程句  
+</span></span></span><span class="line"><span class="cl">	<span class="c1">// 柄为值，放入一个table中，当回应消息送达时，通过session找到对应的协程，并将其唤醒。后面章节会详细讨论
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">session</span><span class="p">;</span> 
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="o">*</span> <span class="n">data</span><span class="p">;</span>        <span class="c1">// 消息地址
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">size_t</span> <span class="n">sz</span><span class="p">;</span>          <span class="c1">// 消息大小
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">size_t</span> <span class="n">sz</span><span class="p">;</span>          <span class="c1">// 消息大小
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_mq.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define DEFAULT_QUEUE_SIZE 64
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define DEFAULT_QUEUE_SIZE 64
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define MAX_GLOBAL_MQ 0x10000
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 0 means mq is not in global mq.
 </span></span></span><span class="line"><span class="cl"><span class="c1">// 1 means mq is in global mq , or the message is dispatching.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="cp">#define MQ_IN_GLOBAL 1
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define MQ_OVERLOAD 1024
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">message_queue</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 自旋锁，可能存在多个线程，向同一个队列写入的情况，加上自旋锁避免并发带来的发现，
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//后面会讨论互斥锁，自旋锁，读写锁和条件变量的区别
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">spinlock</span> <span class="n">lock</span><span class="p">;</span>     
+</span></span></span><span class="line"><span class="cl">    <span class="c1">//后面会讨论互斥锁，自旋锁，读写锁和条件变量的区别
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">spinlock</span> <span class="n">lock</span><span class="p">;</span>     
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">;</span>                <span class="c1">// 拥有此消息队列的服务的id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">cap</span><span class="p">;</span>                        <span class="c1">// 消息大小
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">head</span><span class="p">;</span>                       <span class="c1">// 头部index
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">tail</span><span class="p">;</span>                       <span class="c1">// 尾部index
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">release</span><span class="p">;</span>                    <span class="c1">// 是否能释放消息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">in_global</span><span class="p">;</span>                  <span class="c1">// 是否在全局消息队列中，0表示不是，1表示是
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">overload</span><span class="p">;</span>                   <span class="c1">// 是否过载
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">overload_threshold</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">cap</span><span class="p">;</span>                        <span class="c1">// 消息大小
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">head</span><span class="p">;</span>                       <span class="c1">// 头部index
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">tail</span><span class="p">;</span>                       <span class="c1">// 尾部index
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">release</span><span class="p">;</span>                    <span class="c1">// 是否能释放消息
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">in_global</span><span class="p">;</span>                  <span class="c1">// 是否在全局消息队列中，0表示不是，1表示是
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">overload</span><span class="p">;</span>                   <span class="c1">// 是否过载
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">overload_threshold</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_message</span> <span class="o">*</span><span class="n">queue</span><span class="p">;</span>   <span class="c1">// 消息队列
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>     <span class="c1">// 下一个次级消息队列的指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>     <span class="c1">// 下一个次级消息队列的指针
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">global_queue</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">head</span><span class="p">;</span>
@@ -898,7 +898,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_context_push</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">,</span> <span class="k">struct</span> <span class="n">skynet_message</span> <span class="o">*</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">ctx</span> <span class="o">=</span> <span class="nf">skynet_handle_grab</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">ctx</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
@@ -911,7 +911,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_handle.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_handle_grab</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">handle</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">handle_storage</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">H</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
@@ -932,7 +932,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </div>
 <p>因为我们访问一个服务的机会，远大于创建一个服务并写入列表的机会，因此这里用了读写锁，在通过handle获取context指针时，加了一个读取锁，这样当在读取的过程中，同时有新的服务创建，并且存在要扩充skynet_context list容量的风险，因此不论如何，他都应当被阻塞住，直到所有的读取锁都释放掉。<br>
 次级消息队列，实际上是一个数组，并且用两个int型数据，分别指向他的头部和尾部（head和tail），不论是head还是tail，当他们的值&gt;=数组尺寸时，都会进行回绕（即从下标为0开始，比如值为数组的size时，会被重新赋值为0），在push操作后，head等于tail意味着队列已满（此时，队列会扩充两倍，并从头到尾重新赋值，此时head指向0，而tail为扩充前，数组的大小），在pop操作后，head等于tail意味着队列已经空了（后面他会从skynet全局消息队列中，被剔除掉）。<br>
-<img class="tw-inline" loading="lazy" src='/003skynet_mq_9662554718605540844.png' srcset="/003skynet_mq_9662554718605540844_hu_45d9b38656dc1bb5.webp 800w, /003skynet_mq_9662554718605540844_hu_3bfe0142134f266e.webp 1200w, /003skynet_mq_9662554718605540844_hu_497881e6e2ef2db2.webp 1600w"  alt="image" height="340" width="676">图3</p>
+<img class="tw-inline" loading="lazy" src='/003skynet_mq_9662554718605540844.png' srcset="/003skynet_mq_9662554718605540844_hu_4cf30173cecc0eb4.webp 800w, /003skynet_mq_9662554718605540844_hu_eb2020d93598a3f3.webp 1200w, /003skynet_mq_9662554718605540844_hu_f4b4a511bd67f943.webp 1600w"  alt="image" height="340" width="676">图3</p>
 </li>
 </ul>
 <h2 id="skynet如何启动一个c服务" class="headerLink">
@@ -1027,7 +1027,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_context_new</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">param</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span> <span class="n">mod</span> <span class="o">=</span> <span class="nf">skynet_module_query</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
@@ -1051,11 +1051,11 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl">	<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">init</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">endless</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// Should set to 0 first to avoid skynet_handle_retireall get an uninitialized handle
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">handle</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>	
+</span></span></span><span class="line"><span class="cl">	<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">handle</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>	
 </span></span><span class="line"><span class="cl">	<span class="n">ctx</span><span class="o">-&gt;</span><span class="n">handle</span> <span class="o">=</span> <span class="nf">skynet_handle_register</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">=</span> <span class="nf">skynet_mq_create</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// init function maybe use ctx-&gt;handle, so it must init at last
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">context_inc</span><span class="p">();</span>
+</span></span></span><span class="line"><span class="cl">	<span class="nf">context_inc</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="nf">CHECKCALLING_BEGIN</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="nf">skynet_module_instance_init</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">);</span>
@@ -1082,7 +1082,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_module.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_module_query</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="nf">_query</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span>
@@ -1091,7 +1091,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl">	<span class="nf">SPIN_LOCK</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="n">result</span> <span class="o">=</span> <span class="nf">_query</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="c1">// double check
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="n">M</span><span class="o">-&gt;</span><span class="n">count</span> <span class="o">&lt;</span> <span class="n">MAX_MODULE_TYPE</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">M</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="kt">void</span> <span class="o">*</span> <span class="n">dl</span> <span class="o">=</span> <span class="nf">_try_open</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">name</span><span class="p">);</span>
@@ -1121,7 +1121,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">path_size</span> <span class="o">+</span> <span class="n">name_size</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">//search path
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">void</span> <span class="o">*</span> <span class="n">dl</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">void</span> <span class="o">*</span> <span class="n">dl</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">tmp</span><span class="p">[</span><span class="n">sz</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">	<span class="k">do</span>
 </span></span><span class="line"><span class="cl">	<span class="p">{</span>
@@ -1156,7 +1156,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl"><span class="nf">_open_sym</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_module</span> <span class="o">*</span><span class="n">mod</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">size_t</span> <span class="n">name_size</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">mod</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">tmp</span><span class="p">[</span><span class="n">name_size</span> <span class="o">+</span> <span class="mi">9</span><span class="p">];</span> <span class="c1">// create/init/release/signal , longest name is release (7)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">memcpy</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">mod</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name_size</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">	<span class="nf">memcpy</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">mod</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name_size</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">strcpy</span><span class="p">(</span><span class="n">tmp</span><span class="o">+</span><span class="n">name_size</span><span class="p">,</span> <span class="s">&#34;_create&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="n">mod</span><span class="o">-&gt;</span><span class="n">create</span> <span class="o">=</span> <span class="nf">dlsym</span><span class="p">(</span><span class="n">mod</span><span class="o">-&gt;</span><span class="n">module</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">strcpy</span><span class="p">(</span><span class="n">tmp</span><span class="o">+</span><span class="n">name_size</span><span class="p">,</span> <span class="s">&#34;_init&#34;</span><span class="p">);</span>
@@ -1272,7 +1272,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_start.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> 
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_start</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_config</span> <span class="o">*</span> <span class="n">config</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="p">...</span>
 </span></span><span class="line"><span class="cl">
@@ -1379,7 +1379,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// service_logger.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">logger</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">logger</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="n">FILE</span> <span class="o">*</span> <span class="n">handle</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">close</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
@@ -1485,7 +1485,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// service_logger.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">_logger</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">context</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ud</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">session</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">source</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">msg</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">logger</span> <span class="o">*</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">ud</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">fprintf</span><span class="p">(</span><span class="n">inst</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">,</span> <span class="s">&#34;[:%08x] &#34;</span><span class="p">,</span><span class="n">source</span><span class="p">);</span>
@@ -1516,7 +1516,7 @@ skynet本质是什么？它为我们提供了什么机制？如何正确使用�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> 
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_callback</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">context</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ud</span><span class="p">,</span> <span class="n">skynet_cb</span> <span class="n">cb</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="n">context</span><span class="o">-&gt;</span><span class="n">cb</span> <span class="o">=</span> <span class="n">cb</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="n">context</span><span class="o">-&gt;</span><span class="n">cb_ud</span> <span class="o">=</span> <span class="n">ud</span><span class="p">;</span>
@@ -1683,7 +1683,7 @@ skynet在启动时，会创建若干条worker线程（由配置指定），这�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_start.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">void</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span>
 </span></span><span class="line"><span class="cl"><span class="nf">start</span><span class="p">(</span><span class="kt">int</span> <span class="kr">thread</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">pthread_t</span> <span class="n">pid</span><span class="p">[</span><span class="kr">thread</span><span class="o">+</span><span class="mi">3</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">
@@ -1825,7 +1825,7 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_mq.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> 
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_globalmq_push</span><span class="p">(</span><span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span> <span class="n">queue</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">global_queue</span> <span class="o">*</span><span class="n">q</span><span class="o">=</span> <span class="n">Q</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
@@ -1951,11 +1951,11 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_start.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">void</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span>
 </span></span><span class="line"><span class="cl"><span class="nf">wakeup</span><span class="p">(</span><span class="k">struct</span> <span class="n">monitor</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">busy</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">sleep</span> <span class="o">&gt;=</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">count</span> <span class="o">-</span> <span class="n">busy</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="c1">// signal sleep worker, &#34;spurious wakeup&#34; is harmless
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nf">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">		<span class="nf">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
@@ -1970,9 +1970,9 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
 </span></span><span class="line"><span class="cl">		<span class="nf">usleep</span><span class="p">(</span><span class="mi">2500</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// wakeup socket thread
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">skynet_socket_exit</span><span class="p">();</span>
+</span></span></span><span class="line"><span class="cl">	<span class="nf">skynet_socket_exit</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// wakeup all worker thread
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">	<span class="nf">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="n">m</span><span class="o">-&gt;</span><span class="n">quit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">pthread_cond_broadcast</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
@@ -1994,8 +1994,8 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
 </span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="nf">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">				<span class="o">++</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">sleep</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">				<span class="c1">// &#34;spurious wakeup&#34; is harmless,
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="c1">// because skynet_context_message_dispatch() can be call at any time.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl">				<span class="c1">// because skynet_context_message_dispatch() can be call at any time.
+</span></span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">					<span class="nf">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">				<span class="o">--</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">sleep</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="p">(</span><span class="nf">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">))</span> <span class="p">{</span>
@@ -2009,7 +2009,7 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// skynet_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_context_message_dispatch</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_monitor</span> <span class="o">*</span><span class="n">sm</span><span class="p">,</span> <span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="kt">int</span> <span class="n">weight</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="n">q</span> <span class="o">=</span> <span class="nf">skynet_globalmq_pop</span><span class="p">();</span>
@@ -2057,8 +2057,8 @@ skynet所有的线程都在这里被创建，在创建完monitor线程，timer�
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">message_queue</span> <span class="o">*</span><span class="n">nq</span> <span class="o">=</span> <span class="nf">skynet_globalmq_pop</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">nq</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="c1">// If global mq is not empty , push q back, and return next queue (nq)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Else (global mq is empty or block, don&#39;t push q back, and return q again (for next dispatch)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nf">skynet_globalmq_push</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">		<span class="c1">// Else (global mq is empty or block, don&#39;t push q back, and return q again (for next dispatch)
+</span></span></span><span class="line"><span class="cl">		<span class="nf">skynet_globalmq_push</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="n">q</span> <span class="o">=</span> <span class="n">nq</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span> 
 </span></span><span class="line"><span class="cl">	<span class="nf">skynet_context_release</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
@@ -2090,7 +2090,7 @@ d) 返回第a步</li>
 <li>线程安全
 <ul>
 <li>整个消费流程，每条worker线程，从global_mq取出的次级消息队列都是唯一的，并且有且只有一个服务与之对应，取出之后，在该worker线程完成所有callback调用之前，不会push回global_mq中，也就是说，在这段时间内，其他worker线程不能拿到这个次级消息队列所对应的服务，并调用callback函数，也就是说一个服务不可能同时在多条worker线程内执行callback函数，从而保证了线程安全<br>
-<img class="tw-inline" loading="lazy" src='/004thread_safe_15230058684805131893.png' srcset="/004thread_safe_15230058684805131893_hu_33548d8e48f27a3e.webp 800w, /004thread_safe_15230058684805131893_hu_a8e66fb7bca231ee.webp 1200w, /004thread_safe_15230058684805131893_hu_84ac1baaa5afad44.webp 1600w"  alt="image" height="575" width="744"></li>
+<img class="tw-inline" loading="lazy" src='/004thread_safe_15230058684805131893.png' srcset="/004thread_safe_15230058684805131893_hu_c41897f5dad94ce4.webp 800w, /004thread_safe_15230058684805131893_hu_961273a7ca1cf37.webp 1200w, /004thread_safe_15230058684805131893_hu_8eee4e5eb516f7c8.webp 1600w"  alt="image" height="575" width="744"></li>
 <li>不论是global_mq也好，次级消息队列也好，他们在入队和出队操作时，都有加上spinlock，这样多个线程同时访问mq的时候，第一个访问者会进入临界区并锁住，其他线程会阻塞等待，直至该锁解除，这样也保证了线程安全。global_mq会同时被多个worker线程访问，这个很好理解，因为worker线程总是在不断尝试驱动不同的服务，要驱动服务，首先要取出至少一个消息，要获得消息，就要取出一个次级消息队列，而这个次级消息队列要从全局消息队列里取。虽然一个服务的callback函数，只能在一个worker线程内被调用，但是在多个worker线程中，可以向同一个次级消息队列push消息，即便是该次级消息队列所对应的服务正在执行callback函数，由于次级消息队列不是skynet_context的成员（skynet_context只是包含了次级消息队列的指针），因此改变次级消息队列不等于改变skynet_context上的数据，不会影响到该服务自身内存的数据，次级消息队列在进行push和pop操作的时候，会加上一个spinlock，当多个worker线程同时向同一个次级消息队列push消息时，第一个访问的worker线程，能够进入临界区，其他worker线程就阻塞等待，直至该临界区解锁，这样保证了线程安全。</li>
 <li>我们在通过handle从skynet_context list里获取skynet_context的过程中（比如派发消息时，要要先获取skynet_context指针，再调用该服务的callback函数），需要加上一个读写锁，因为在skynet运作的过程中，获取skynet_context，比创建skynet_context的情况要多得多，因此这里用了读写锁：
 <div class="code-block highlight is-closed show-line-numbers  tw-group tw-my-2">
@@ -2551,7 +2551,7 @@ d) 返回第a步</li>
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// service_snlua.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">_launch</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">context</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ud</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">session</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">source</span> <span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">msg</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">assert</span><span class="p">(</span><span class="n">type</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">session</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">snlua</span> <span class="o">*</span><span class="n">l</span> <span class="o">=</span> <span class="n">ud</span><span class="p">;</span>
@@ -2573,7 +2573,7 @@ d) 返回第a步</li>
 </span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">self</span> <span class="o">=</span> <span class="nf">skynet_command</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">&#34;REG&#34;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">handle_id</span> <span class="o">=</span> <span class="nf">strtoul</span><span class="p">(</span><span class="n">self</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// it must be first message
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">skynet_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">handle_id</span><span class="p">,</span> <span class="n">PTYPE_TAG_DONTCOPY</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">sz</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">	<span class="nf">skynet_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">handle_id</span><span class="p">,</span> <span class="n">PTYPE_TAG_DONTCOPY</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">sz</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre>
 </div>
@@ -2668,7 +2668,7 @@ d) 返回第a步</li>
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// service_snlua.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">snlua</span> <span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">args</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span> <span class="o">=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">L</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="n">l</span><span class="o">-&gt;</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">;</span>
@@ -3589,7 +3589,7 @@ d) 返回第a步</li>
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// lua-skynet.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">_cb</span><span class="p">(</span><span class="k">struct</span> <span class="n">skynet_context</span> <span class="o">*</span> <span class="n">context</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ud</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">session</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">source</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">msg</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span> <span class="o">=</span> <span class="n">ud</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">trace</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
@@ -4746,7 +4746,7 @@ Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_timer.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span>
 </span></span><span class="line"><span class="cl"><span class="nf">dispatch_list</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_node</span> <span class="o">*</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">do</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="k">struct</span> <span class="n">timer_event</span> <span class="o">*</span> <span class="n">event</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">timer_event</span> <span class="o">*</span><span class="p">)(</span><span class="n">current</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
@@ -4977,16 +4977,16 @@ Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// socket_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">socket</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">socket</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">uintptr_t</span> <span class="n">opaque</span><span class="p">;</span>       <span class="c1">// 与本socket关联的服务地址，socket接收到的消息，最后将会传送到这个服务商
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">wb_list</span> <span class="n">high</span><span class="p">;</span>    <span class="c1">// 高优先级发送队列
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">wb_list</span> <span class="n">low</span><span class="p">;</span>     <span class="c1">// 低优先级发送队列
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int64_t</span> <span class="n">wb_size</span><span class="p">;</span>        <span class="c1">// 发送字节大小
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>                 <span class="c1">// socket文件描述符
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">id</span><span class="p">;</span>                 <span class="c1">// 位于socket_server的slot列表中的位置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint16_t</span> <span class="n">protocol</span><span class="p">;</span>      <span class="c1">// 使用的协议tcp or udp 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint16_t</span> <span class="n">type</span><span class="p">;</span>          <span class="c1">// epoll事件触发时，会根据type来选择处理事件的逻辑
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">union</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">wb_list</span> <span class="n">high</span><span class="p">;</span>    <span class="c1">// 高优先级发送队列
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">wb_list</span> <span class="n">low</span><span class="p">;</span>     <span class="c1">// 低优先级发送队列
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int64_t</span> <span class="n">wb_size</span><span class="p">;</span>        <span class="c1">// 发送字节大小
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>                 <span class="c1">// socket文件描述符
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">id</span><span class="p">;</span>                 <span class="c1">// 位于socket_server的slot列表中的位置
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint16_t</span> <span class="n">protocol</span><span class="p">;</span>      <span class="c1">// 使用的协议tcp or udp 
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint16_t</span> <span class="n">type</span><span class="p">;</span>          <span class="c1">// epoll事件触发时，会根据type来选择处理事件的逻辑
+</span></span></span><span class="line"><span class="cl">	<span class="k">union</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="kt">uint8_t</span> <span class="n">udp_address</span><span class="p">[</span><span class="n">UDP_ADDRESS_SIZE</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="n">p</span><span class="p">;</span>
@@ -4994,17 +4994,17 @@ Lua 支持协程，也叫 协同式多线程。 一个协程在 Lua 中代表了
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">socket_server</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">recvctrl_fd</span><span class="p">;</span>        <span class="c1">// 接收管道消息的文件描述
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">sendctrl_fd</span><span class="p">;</span>        <span class="c1">// 发送管道消息的文件描述
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">checkctrl</span><span class="p">;</span>          <span class="c1">// 判断是否有其他线程通过管道，向socket线程发送消息的标记变量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">poll_fd</span> <span class="n">event_fd</span><span class="p">;</span>       <span class="c1">// epoll实例id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">alloc_id</span><span class="p">;</span>           <span class="c1">// 已经分配的socket slot列表id
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">event_n</span><span class="p">;</span>            <span class="c1">// 标记本次epoll事件的数量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">event_index</span><span class="p">;</span>        <span class="c1">// 下一个未处理的epoll事件索引
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">socket_object_interface</span> <span class="n">soi</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">sendctrl_fd</span><span class="p">;</span>        <span class="c1">// 发送管道消息的文件描述
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">checkctrl</span><span class="p">;</span>          <span class="c1">// 判断是否有其他线程通过管道，向socket线程发送消息的标记变量
+</span></span></span><span class="line"><span class="cl">	<span class="n">poll_fd</span> <span class="n">event_fd</span><span class="p">;</span>       <span class="c1">// epoll实例id
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">alloc_id</span><span class="p">;</span>           <span class="c1">// 已经分配的socket slot列表id
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">event_n</span><span class="p">;</span>            <span class="c1">// 标记本次epoll事件的数量
+</span></span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">event_index</span><span class="p">;</span>        <span class="c1">// 下一个未处理的epoll事件索引
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">socket_object_interface</span> <span class="n">soi</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">event</span> <span class="n">ev</span><span class="p">[</span><span class="n">MAX_EVENT</span><span class="p">];</span> <span class="c1">// epoll事件列表
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">struct</span> <span class="n">socket</span> <span class="n">slot</span><span class="p">[</span><span class="n">MAX_SOCKET</span><span class="p">];</span>  <span class="c1">// socket 列表
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_INFO</span><span class="p">];</span>  <span class="c1">// 地址信息转成字符串以后，存在这里
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">uint8_t</span> <span class="n">udpbuffer</span><span class="p">[</span><span class="n">MAX_UDP_PACKAGE</span><span class="p">];</span>
+</span></span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">socket</span> <span class="n">slot</span><span class="p">[</span><span class="n">MAX_SOCKET</span><span class="p">];</span>  <span class="c1">// socket 列表
+</span></span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_INFO</span><span class="p">];</span>  <span class="c1">// 地址信息转成字符串以后，存在这里
+</span></span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">udpbuffer</span><span class="p">[</span><span class="n">MAX_UDP_PACKAGE</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">	<span class="n">fd_set</span> <span class="n">rfds</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre>
 </div>
@@ -5101,7 +5101,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// socket_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span>
 </span></span><span class="line"><span class="cl"><span class="nf">new_fd</span><span class="p">(</span><span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span><span class="n">ss</span><span class="p">,</span> <span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">,</span> <span class="kt">uintptr_t</span> <span class="n">opaque</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">add</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span> <span class="n">s</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ss</span><span class="o">-&gt;</span><span class="n">slot</span><span class="p">[</span><span class="nf">HASH_ID</span><span class="p">(</span><span class="n">id</span><span class="p">)];</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">assert</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">SOCKET_TYPE_RESERVE</span><span class="p">);</span>
@@ -5125,7 +5125,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// socket_epoll.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">sp_add</span><span class="p">(</span><span class="kt">int</span> <span class="n">efd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sock</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ud</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span><span class="p">;</span>
@@ -5227,7 +5227,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// return type
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> 
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">socket_server_poll</span><span class="p">(</span><span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span><span class="n">ss</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket_message</span> <span class="o">*</span> <span class="n">result</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">more</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	    <span class="p">...</span>
@@ -5247,7 +5247,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl">		<span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">			<span class="c1">// dispatch pipe message at beginning
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">continue</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">			<span class="k">continue</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="p">}</span>
 </span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nl">SOCKET_TYPE_CONNECTING</span><span class="p">:</span>
@@ -5361,7 +5361,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
       tw-overflow-x-auto
       tw-scrollbar-thin
       "><span class="line"><span class="cl"><span class="c1">// skynet_socket.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span> <span class="n">SOCKET_SERVER</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span> <span class="n">SOCKET_SERVER</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">skynet_socket_init</span><span class="p">()</span> <span class="p">{</span>
@@ -5369,7 +5369,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// socket_server.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span> 
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">socket_server</span> <span class="o">*</span> 
 </span></span><span class="line"><span class="cl"><span class="nf">socket_server_create</span><span class="p">()</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">fd</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
@@ -5380,14 +5380,14 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="c1">// 创建管道，用于其他线程向socket线程发送消息，这样能够轻松保证其他线程向socket线程发送数据包时的线程安全
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="nf">pipe</span><span class="p">(</span><span class="n">fd</span><span class="p">))</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nf">pipe</span><span class="p">(</span><span class="n">fd</span><span class="p">))</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="nf">sp_release</span><span class="p">(</span><span class="n">efd</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;socket-server: create socket pair failed.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nf">sp_add</span><span class="p">(</span><span class="n">efd</span><span class="p">,</span> <span class="n">fd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">))</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="c1">// add recvctrl_fd to event poll
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;socket-server: can&#39;t add server fd to event pool.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">		<span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;socket-server: can&#39;t add server fd to event pool.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="nf">close</span><span class="p">(</span><span class="n">fd</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">		<span class="nf">close</span><span class="p">(</span><span class="n">fd</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">		<span class="nf">sp_release</span><span class="p">(</span><span class="n">efd</span><span class="p">);</span>
@@ -5399,7 +5399,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl">	<span class="n">ss</span><span class="o">-&gt;</span><span class="n">recvctrl_fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">	<span class="n">ss</span><span class="o">-&gt;</span><span class="n">sendctrl_fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">	<span class="n">ss</span><span class="o">-&gt;</span><span class="n">checkctrl</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// checkctrl等于1的时候，表示本节点内其他线程有发送数据包到socket线程
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">MAX_SOCKET</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ss</span><span class="o">-&gt;</span><span class="n">slot</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">		<span class="n">s</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">=</span> <span class="n">SOCKET_TYPE_INVALID</span><span class="p">;</span>
@@ -5417,7 +5417,7 @@ socket_server结构中，有一个socket列表&ndash;slot列表，这里存放�
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// socket_epoll.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
 </span></span><span class="line"><span class="cl"><span class="nf">sp_create</span><span class="p">()</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nf">epoll_create</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre>
@@ -5461,22 +5461,22 @@ older kernels.</p>
 <li>
 <p>skynet监听和绑定端口的流程<br>
 我们要真正接收来自客户端的消息时，通常需要创建一个gate服务，用于接收从socket线程发送过来的消息，首先我们要通过gate，绑定和监听一个端口。这里，我们在gate创建阶段监听一个端口，在worker线程内，gate服务创建绑定了一个端口，并且监听了它，此时，gate服务（worker线程内）通过管道向socket线程发送了一个请求，向socket slot里添加一个专门用于监听端口的socket（类型为SOCKET_TYPE_LISTEN），并且在epoll里添加这个socket的监听事件，这样当有关于该socket的epoll事件触发时，由于epoll的event数据包含socket的指针，该socket对应的类型为SOCKET_TYPE_LISTEN，因此我们可以知道该epoll事件，其实是有一个连接可以建立了。在连接建立以后，socket线程会向gate服务发送一条消息，通知gate服务新建立连接socket的slot id，让gate自己处理。
-<img class="tw-inline" loading="lazy" src='/005socket_listen_10836511535592514656.png' srcset="/005socket_listen_10836511535592514656_hu_b9e6917a0f6534a7.webp 800w, /005socket_listen_10836511535592514656_hu_2846605b4e546f0a.webp 1200w, /005socket_listen_10836511535592514656_hu_aa04f98864dac495.webp 1600w"  alt="image" height="522" width="757"></p>
+<img class="tw-inline" loading="lazy" src='/005socket_listen_10836511535592514656.png' srcset="/005socket_listen_10836511535592514656_hu_ffccada561fc1a44.webp 800w, /005socket_listen_10836511535592514656_hu_8c1ffea9811c75c3.webp 1200w, /005socket_listen_10836511535592514656_hu_e23ea43ea0015991.webp 1600w"  alt="image" height="522" width="757"></p>
 </li>
 <li>
 <p>skynet建立和客户端连接流程<br>
 我们在创建了一个监听端口的socket并且为其添加epoll事件以后，当有客户端发送连接请求的时候，socket线程会accept他们，并在socket slot里添加新的socket，此时，socket线程也会向gate服务的次级消息队列，插入一个消息，告知它，有新的连接建立，并且告诉gate新创建socket在socket slot的id，gate接收到新连接建立事件后，会根据会创建一个lua服务&ndash;agent服务（这里忽略登陆验证的情况），并且以socket的slot id为key，agent服务地址为value存入一个table，以便于gate接收到消息的时候，通过socket slot id查找agent地址并将数据包转发给agent服务。此外，这里也以agent服务地址为key，socket slot id为value，将信息存入另一个table表，以便于agent要推送消息时，通过管道，将要下传的数据以及socket slot id一起发给socket线程，socket线程通过id，找到对应的socket指针，并将数据通过fd传给客户端。
-<img class="tw-inline" loading="lazy" src='/006socket_accept_1783431133188542690.png' srcset="/006socket_accept_1783431133188542690_hu_40e32d87fdb97202.webp 800w, /006socket_accept_1783431133188542690_hu_4ab53000483f86b7.webp 1200w, /006socket_accept_1783431133188542690_hu_c2c82b83cacb5f9a.webp 1600w"  alt="image" height="723" width="676"></p>
+<img class="tw-inline" loading="lazy" src='/006socket_accept_1783431133188542690.png' srcset="/006socket_accept_1783431133188542690_hu_171f4e309b43b349.webp 800w, /006socket_accept_1783431133188542690_hu_d62aa7fc0e7a2c67.webp 1200w, /006socket_accept_1783431133188542690_hu_3e721c65897be0d7.webp 1600w"  alt="image" height="723" width="676"></p>
 </li>
 <li>
 <p>skynet接收客户端消息流程
 由于单个skynet节点内，所有的socket都归gate服务管理，当socket收到数据包以后，就会往gate服务的次级消息队列，push数据包消息，gate在收到消息以后，首先会对数据进行分包和粘包处理，当收齐所有字节以后，又会向agent服务转发（向agent的次级消息队列push消息），最后agent会一个一个消费这些从客户端上传的请求。
-<img class="tw-inline" loading="lazy" src='/007socket_recv_9849091434538889681.png' srcset="/007socket_recv_9849091434538889681_hu_12253b762079947b.webp 800w, /007socket_recv_9849091434538889681_hu_ef93ef43c1d1923.webp 1200w, /007socket_recv_9849091434538889681_hu_6179832d570f4175.webp 1600w"  alt="image" height="806" width="836"></p>
+<img class="tw-inline" loading="lazy" src='/007socket_recv_9849091434538889681.png' srcset="/007socket_recv_9849091434538889681_hu_69a1b6633cad7eb0.webp 800w, /007socket_recv_9849091434538889681_hu_9a48977dfaa0b5fb.webp 1200w, /007socket_recv_9849091434538889681_hu_c6e3bbaaa35e0adc.webp 1600w"  alt="image" height="806" width="836"></p>
 </li>
 <li>
 <p>服务端向客户端发送数据流程
 agent服务向客户端发送消息时，直接通过管道，将数据包从worker线程发送往socket线程，socket线程收到后，会将数据包存入对应socket的write buffer中，最后再向客户端推送。
-<img class="tw-inline" loading="lazy" src='/008socket_send_14179917954136374965.png' srcset="/008socket_send_14179917954136374965_hu_a8f7e67f3f0ab2e0.webp 800w, /008socket_send_14179917954136374965_hu_485ac5d59fc264df.webp 1200w, /008socket_send_14179917954136374965_hu_8f3336217a3f6ff7.webp 1600w"  alt="image" height="782" width="676"></p>
+<img class="tw-inline" loading="lazy" src='/008socket_send_14179917954136374965.png' srcset="/008socket_send_14179917954136374965_hu_b44ebce0cb64706c.webp 800w, /008socket_send_14179917954136374965_hu_3b48545693d5f042.webp 1200w, /008socket_send_14179917954136374965_hu_cc64e6174e9af548.webp 1600w"  alt="image" height="782" width="676"></p>
 </li>
 </ol>
 <h2 id="skynet的几个基本服务" class="headerLink">
@@ -5563,10 +5563,10 @@ Cluster设计请查看<a href="http://blog.codingnow.com/2017/03/skynet_cluster.
                 Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">Utterances</a>.
             </noscript></div></article></main><footer class="footer">
         <div class="footer-container"><div class="footer-line">
-                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.152.2">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
+                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.154.3">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"/></svg> DoIt</a>
                 </div><div class="footer-line"><svg class="icon"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 448c-110.532 0-200-89.451-200-200 0-110.531 89.451-200 200-200 110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200zm107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396-82.43 0-140.484-61.425-140.484-141.567 0-79.152 60.275-139.401 139.762-139.401 55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921-8.595-6.776-31.814-22.538-61.708-22.538-48.303 0-77.916 35.33-77.916 80.082 0 41.589 26.888 83.692 78.277 83.692 32.657 0 56.843-19.039 65.726-27.225 5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518z"/></svg>2019 - 2025<span class="author">&nbsp;<a href="https://github.com/HEIGE-PCloud" target="_blank" rel="noopener noreferrer">PCloud</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 448c-110.532 0-200-89.451-200-200 0-110.531 89.451-200 200-200 110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200zm107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396-82.43 0-140.484-61.425-140.484-141.567 0-79.152 60.275-139.401 139.762-139.401 55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921-8.595-6.776-31.814-22.538-61.708-22.538-48.303 0-77.916 35.33-77.916 80.082 0 41.589 26.888 83.692 78.277 83.692 32.657 0 56.843-19.039 65.726-27.225 5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518z"/></svg>2019 - 2026<span class="author">&nbsp;<a href="https://github.com/HEIGE-PCloud" target="_blank" rel="noopener noreferrer">PCloud</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
             <div class="footer-line"></div>
             <div class="footer-line">
             </div>

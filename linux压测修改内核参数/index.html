@@ -27,14 +27,14 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
-<link rel="canonical" href="https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/" /><link rel="prev" href="https://hugodoit.pages.dev/epoll/" />
+<link rel="canonical" href="https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/" /><link rel="prev" href="https://hugodoit.pages.dev/epoll/" /><link rel="next" href="https://hugodoit.pages.dev/python%E5%A4%9A%E8%BF%9B%E7%A8%8B/" />
 <link rel="stylesheet" href="/css/main.min.css"><link rel="stylesheet" href="/css/style.min.css"><meta name="google-site-verification" content="MQ8DNu27ayX6B_4ObiEDK09vGr1fdy7kOAnbd09hJk4" /><script type="application/ld+json">{"@context": "https://schema.org","@type": "BlogPosting",
         "headline": "Linux压测修改内核参数",
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/"
-        },"image": ["https://hugodoit.pages.dev/images/Apple-Devices-Preview.png"],"genre": "posts","keywords":["网络, Linux"],"wordcount":  117 ,
+        },"image": ["https://hugodoit.pages.dev/images/Apple-Devices-Preview.png"],"genre": "posts","keywords":["网络, Linux"],"wordcount":  808 ,
         "url": "https://hugodoit.pages.dev/linux%E5%8E%8B%E6%B5%8B%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0/","datePublished": "2025-11-14T18:18:07+08:00","dateModified": "2025-11-14T18:18:07+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": {
@@ -193,6 +193,19 @@
         <li><a href="#修改-etcsysctlconf">修改 /etc/sysctl.conf</a></li>
       </ul>
     </li>
+    <li><a href="#linux内核参数">linux内核参数</a>
+      <ul>
+        <li><a href="#netipv4tcp_tw_reuse">net.ipv4.tcp_tw_reuse</a>
+          <ul>
+            <li><a href="#基础概念">基础概念</a></li>
+            <li><a href="#优势">优势</a></li>
+            <li><a href="#类型">类型</a></li>
+            <li><a href="#应用场景">应用场景</a></li>
+            <li><a href="#可能遇到的问题和解决方案">可能遇到的问题和解决方案</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
   </ul>
 </nav></div>
     </div><dialog id="toc-dialog" class="tw-max-w-full tw-w-full tw-max-h-full tw-h-full tw-ml-16">
@@ -204,6 +217,19 @@
       <ul>
         <li><a href="#修改-etcsecuritylimitsconf">修改 /etc/security/limits.conf</a></li>
         <li><a href="#修改-etcsysctlconf">修改 /etc/sysctl.conf</a></li>
+      </ul>
+    </li>
+    <li><a href="#linux内核参数">linux内核参数</a>
+      <ul>
+        <li><a href="#netipv4tcp_tw_reuse">net.ipv4.tcp_tw_reuse</a>
+          <ul>
+            <li><a href="#基础概念">基础概念</a></li>
+            <li><a href="#优势">优势</a></li>
+            <li><a href="#类型">类型</a></li>
+            <li><a href="#应用场景">应用场景</a></li>
+            <li><a href="#可能遇到的问题和解决方案">可能遇到的问题和解决方案</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -219,9 +245,9 @@
             <div class="post-meta-line"><svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;<time datetime="2025-11-14">2025-11-14</time>&nbsp;<svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"/></svg>&nbsp;<time datetime="2025-11-14">2025-11-14</time>&nbsp;<svg class="icon"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;约 117 字&nbsp;
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;约 808 字&nbsp;
                     <svg class="icon"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;预计阅读 1 分钟&nbsp;</div>
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;预计阅读 4 分钟&nbsp;</div>
         </div><div class="details toc print:!tw-block" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -234,6 +260,19 @@
       <ul>
         <li><a href="#修改-etcsecuritylimitsconf">修改 /etc/security/limits.conf</a></li>
         <li><a href="#修改-etcsysctlconf">修改 /etc/sysctl.conf</a></li>
+      </ul>
+    </li>
+    <li><a href="#linux内核参数">linux内核参数</a>
+      <ul>
+        <li><a href="#netipv4tcp_tw_reuse">net.ipv4.tcp_tw_reuse</a>
+          <ul>
+            <li><a href="#基础概念">基础概念</a></li>
+            <li><a href="#优势">优势</a></li>
+            <li><a href="#类型">类型</a></li>
+            <li><a href="#应用场景">应用场景</a></li>
+            <li><a href="#可能遇到的问题和解决方案">可能遇到的问题和解决方案</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -431,7 +470,57 @@
 </span></span><span class="line"><span class="cl">net.ipv4.tcp_wmem = 4096 16384 16777216
 </span></span><span class="line"><span class="cl">net.ipv4.tcp_mem = 786432 1048576 1572864</span></span></code></pre>
 </div>
-<p>修改完后直接重启系统</p></div>
+<p>修改完后直接重启系统</p>
+<h2 id="linux内核参数" class="headerLink">
+    <a href="#linux%e5%86%85%e6%a0%b8%e5%8f%82%e6%95%b0" class="header-mark"></a>2 linux内核参数</h2><h3 id="netipv4tcp_tw_reuse" class="headerLink">
+    <a href="#netipv4tcp_tw_reuse" class="header-mark"></a>2.1 net.ipv4.tcp_tw_reuse</h3><p><code>net.ipv4.tcp_tw_reuse</code> 是 Linux 操作系统内核参数之一，用于控制是否允许将处于 TIME_WAIT 状态的 TCP 连接重新用于新的连接。下面是对这个参数的基础概念、优势、类型、应用场景以及可能遇到的问题和解决方案的详细解释。</p>
+<h4 id="基础概念" class="headerLink">
+    <a href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5" class="header-mark"></a>2.1.1 基础概念</h4><ul>
+<li>TIME_WAIT 状态：当一个 TCP 连接关闭时，它并不会立即消失，而是会进入 TIME_WAIT 状态，持续一段时间（通常是几分钟）。这是为了确保所有延迟的数据包都被处理，并且防止旧连接的数据包干扰新连接。</li>
+<li>tcp_tw_reuse 参数：此参数设置为 1 时，允许系统在 TIME_WAIT 状态的连接上进行新的连接，前提是新连接的源 IP 和端口与旧连接相同，且新连接的目的 IP 和端口与旧连接不同。</li>
+</ul>
+<h4 id="优势" class="headerLink">
+    <a href="#%e4%bc%98%e5%8a%bf" class="header-mark"></a>2.1.2 优势</h4><ol>
+<li>提高端口复用率：在高并发环境下，可以减少因端口耗尽而导致的连接失败问题。</li>
+<li>加快连接建立速度：避免了为新连接等待 TIME_WAIT 状态结束的时间。</li>
+</ol>
+<h4 id="类型" class="headerLink">
+    <a href="#%e7%b1%bb%e5%9e%8b" class="header-mark"></a>2.1.3 类型</h4><ul>
+<li>全局设置：通过修改 /etc/sysctl.conf 文件来全局设置此参数。</li>
+<li>临时设置：使用 sysctl 命令临时调整内核参数。</li>
+</ul>
+<h4 id="应用场景" class="headerLink">
+    <a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af" class="header-mark"></a>2.1.4 应用场景</h4><ul>
+<li>Web 服务器：处理大量短时连接的场景，如 Web 服务器在高访问量时。</li>
+<li>负载均衡器：在负载均衡器后面有多个后端服务器时，可以提高连接效率。</li>
+</ul>
+<h4 id="可能遇到的问题和解决方案" class="headerLink">
+    <a href="#%e5%8f%af%e8%83%bd%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98%e5%92%8c%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" class="header-mark"></a>2.1.5 可能遇到的问题和解决方案</h4><div class="details admonition question open">
+    <div class="details-summary admonition-title">
+        <span class="icon"><svg class="icon"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zM262.655 90c-54.497 0-89.255 22.957-116.549 63.758-3.536 5.286-2.353 12.415 2.715 16.258l34.699 26.31c5.205 3.947 12.621 3.008 16.665-2.122 17.864-22.658 30.113-35.797 57.303-35.797 20.429 0 45.698 13.148 45.698 32.958 0 14.976-12.363 22.667-32.534 33.976C247.128 238.528 216 254.941 216 296v4c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12v-1.333c0-28.462 83.186-29.647 83.186-106.667 0-58.002-60.165-102-116.531-102zM256 338c-25.365 0-46 20.635-46 46 0 25.364 20.635 46 46 46s46-20.636 46-46c0-25.365-20.635-46-46-46z"/></svg></span>问题<span class="details-icon"><svg class="icon"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg></span>
+    </div>
+    <div class="details-content">
+        <div class="admonition-content"><p>问题1：启用 tcp_tw_reuse 后仍然出现连接失败</p>
+<p>原因：可能是由于网络中的路由器或防火墙阻止了带有相同四元组（源 IP、源端口、目的 IP、目的端口）的连接。</p>
+<p>解决方案：</p>
+<p>检查网络设备配置，确保没有阻止重复四元组的策略。</p>
+<p>尝试使用 net.ipv4.tcp_timestamps 参数，它允许更精确地控制 TIME_WAIT 状态的行为。</p>
+</div></div></div>
+<div class="details admonition question open">
+    <div class="details-summary admonition-title">
+        <span class="icon"><svg class="icon"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zM262.655 90c-54.497 0-89.255 22.957-116.549 63.758-3.536 5.286-2.353 12.415 2.715 16.258l34.699 26.31c5.205 3.947 12.621 3.008 16.665-2.122 17.864-22.658 30.113-35.797 57.303-35.797 20.429 0 45.698 13.148 45.698 32.958 0 14.976-12.363 22.667-32.534 33.976C247.128 238.528 216 254.941 216 296v4c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12v-1.333c0-28.462 83.186-29.647 83.186-106.667 0-58.002-60.165-102-116.531-102zM256 338c-25.365 0-46 20.635-46 46 0 25.364 20.635 46 46 46s46-20.636 46-46c0-25.365-20.635-46-46-46z"/></svg></span>问题<span class="details-icon"><svg class="icon"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg></span>
+    </div>
+    <div class="details-content">
+        <div class="admonition-content"><p>问题2：启用 tcp_tw_reuse 导致数据混乱</p>
+<p>原因：在某些情况下，如果网络延迟较高或有重复的数据包，启用 tcp_tw_reuse 可能会导致新旧连接的数据混淆。</p>
+<p>解决方案：</p>
+<p>确保网络环境稳定，减少数据包丢失和延迟。</p>
+<p>在必要时，可以考虑禁用 tcp_tw_reuse，并通过增加服务器资源来应对高并发。</p>
+</div></div></div></div>
 
         
 
@@ -484,16 +573,18 @@
     </div>
 
     <div class="post-nav print:tw-hidden"><a href="/epoll/" class="prev" rel="prev" title="Epoll"><svg class="icon"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>Epoll</a></div>
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>Epoll</a>
+            <a href="/python%E5%A4%9A%E8%BF%9B%E7%A8%8B/" class="next" rel="next" title="python多进程">python多进程<svg class="icon"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg></a></div>
 </div>
 <div id="comments" class="print:!tw-hidden tw-pt-32 tw-pb-8"><div id="utterances"></div><noscript>
                 Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">Utterances</a>.
             </noscript></div></article></main><footer class="footer">
         <div class="footer-container"><div class="footer-line">
-                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.152.2">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
+                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.154.3">Hugo</a> 强力驱动&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.2"><svg class="icon"
     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"/></svg> DoIt</a>
                 </div><div class="footer-line"><svg class="icon"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 448c-110.532 0-200-89.451-200-200 0-110.531 89.451-200 200-200 110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200zm107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396-82.43 0-140.484-61.425-140.484-141.567 0-79.152 60.275-139.401 139.762-139.401 55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921-8.595-6.776-31.814-22.538-61.708-22.538-48.303 0-77.916 35.33-77.916 80.082 0 41.589 26.888 83.692 78.277 83.692 32.657 0 56.843-19.039 65.726-27.225 5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518z"/></svg>2019 - 2025<span class="author">&nbsp;<a href="https://github.com/HEIGE-PCloud" target="_blank" rel="noopener noreferrer">PCloud</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 448c-110.532 0-200-89.451-200-200 0-110.531 89.451-200 200-200 110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200zm107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396-82.43 0-140.484-61.425-140.484-141.567 0-79.152 60.275-139.401 139.762-139.401 55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921-8.595-6.776-31.814-22.538-61.708-22.538-48.303 0-77.916 35.33-77.916 80.082 0 41.589 26.888 83.692 78.277 83.692 32.657 0 56.843-19.039 65.726-27.225 5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518z"/></svg>2019 - 2026<span class="author">&nbsp;<a href="https://github.com/HEIGE-PCloud" target="_blank" rel="noopener noreferrer">PCloud</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
             <div class="footer-line"></div>
             <div class="footer-line">
             </div>
